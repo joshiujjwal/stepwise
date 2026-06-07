@@ -1,22 +1,42 @@
 import 'package:flutter/material.dart';
 
 import 'coordinator/fake_llm_client.dart';
+import 'coordinator/model_service.dart';
 import 'coordinator/planner.dart';
+import 'coordinator/swappable_llm_client.dart';
 import 'state/app_controller.dart';
 import 'state/app_scope.dart';
+import 'state/engine_controller.dart';
+import 'state/engine_scope.dart';
 import 'theme/app_theme.dart';
 import 'ui/execute_screen.dart';
 import 'ui/idea_screen.dart';
+import 'ui/settings_screen.dart';
 import 'ui/trends_screen.dart';
 
 Future<void> main() async {
-  // Demo mode: an offline planner so the app is fully usable with no model.
-  // Swap FakeLlmClient -> GemmaLlmClient to run on-device Gemma (see
-  // lib/coordinator/gemma_llm_client.dart).
-  final controller = AppController(coordinator: Coordinator(FakeLlmClient()));
+  // The app starts in offline demo mode so it is fully usable with no model
+  // download. On-device Gemma can be enabled from Settings once a model URL is
+  // configured below (see _gemmaService).
+  final llm = SwappableLlmClient(FakeLlmClient());
+  final controller = AppController(coordinator: Coordinator(llm));
+  final engine =
+      EngineController(swappable: llm, modelService: _gemmaService());
+
   await _seedDemo(controller);
-  runApp(StepwiseApp(controller: controller));
+  runApp(StepwiseApp(controller: controller, engine: engine));
 }
+
+/// Configure on-device Gemma by returning a GemmaModelService with your model
+/// URL (e.g. a Gemma IT .task on Hugging Face). Returns null -> Settings shows
+/// demo-only. Kept out of source control by default so no token ships in git.
+///
+/// Example:
+///   return GemmaModelService(
+///     modelUrl: 'https://huggingface.co/litert-community/Gemma3-1B-IT/resolve/main/gemma3-1b-it.task',
+///     huggingFaceToken: const String.fromEnvironment('HF_TOKEN'),
+///   );
+ModelService? _gemmaService() => null;
 
 Future<void> _seedDemo(AppController controller) async {
   await controller.submitGoal('Plan a weekend trip');
@@ -26,25 +46,33 @@ Future<void> _seedDemo(AppController controller) async {
 }
 
 class StepwiseApp extends StatelessWidget {
-  const StepwiseApp({super.key, required this.controller});
+  const StepwiseApp({
+    super.key,
+    required this.controller,
+    required this.engine,
+  });
 
   final AppController controller;
+  final EngineController engine;
 
   @override
   Widget build(BuildContext context) {
     return AppScope(
       controller: controller,
-      child: MaterialApp(
-        title: 'stepwise',
-        theme: buildStepwiseTheme(),
-        debugShowCheckedModeBanner: false,
-        home: const HomeShell(),
+      child: EngineScope(
+        controller: engine,
+        child: MaterialApp(
+          title: 'stepwise',
+          theme: buildStepwiseTheme(),
+          debugShowCheckedModeBanner: false,
+          home: const HomeShell(),
+        ),
       ),
     );
   }
 }
 
-/// Two primary tabs - Idea | Execute - plus Trends (spec section 11).
+/// Idea | Execute | Trends | Settings (spec section 11 + engine management).
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -59,6 +87,7 @@ class _HomeShellState extends State<HomeShell> {
     IdeaScreen(),
     ExecuteScreen(),
     TrendsScreen(),
+    SettingsScreen(),
   ];
 
   @override
@@ -80,6 +109,10 @@ class _HomeShellState extends State<HomeShell> {
           NavigationDestination(
             icon: Icon(Icons.insights_outlined),
             label: 'Trends',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            label: 'Settings',
           ),
         ],
       ),
