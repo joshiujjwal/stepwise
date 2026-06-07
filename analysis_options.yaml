@@ -17,5 +17,7 @@ linter:
     prefer_final_locals: true
     prefer_final_fields: true
     avoid_print: true
-    require_trailing_commas: true
+    # NOTE: `require_trailing_commas` is intentionally omitted. Dart 3.x's "tall"
+    # formatter manages trailing commas itself; the lint conflicts with it on
+    # long wrapped single-argument calls. `dart format` is the source of truth.
     always_declare_return_types: true
