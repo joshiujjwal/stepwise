@@ -92,8 +92,7 @@ class MicroTask {
   DurationBucket get durationBucket => DurationBucket.fromMinutes(estMinutes);
 
   /// The guard for `done`: every acceptance criterion is satisfied (spec §3).
-  bool get allCriteriaSatisfied =>
-      acceptanceCriteria.every((c) => c.satisfied);
+  bool get allCriteriaSatisfied => acceptanceCriteria.every((c) => c.satisfied);
 
   MicroTask copyWith({
     TaskState? state,

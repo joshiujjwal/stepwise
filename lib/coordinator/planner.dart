@@ -73,7 +73,8 @@ List<String> validatePlannerJson(
   } else if (action == 'propose_plan') {
     _validatePlan(obj, context, errors);
   } else {
-    errors.add('\$.action: must be "ask_clarifying" or "propose_plan", got $action');
+    errors.add(
+        '\$.action: must be "ask_clarifying" or "propose_plan", got $action');
   }
   return errors;
 }
@@ -120,7 +121,9 @@ void _validatePlan(
       continue;
     }
     final title = t['title'];
-    if (title is! String || title.trim().length < 6 || title.trim().length > 80) {
+    if (title is! String ||
+        title.trim().length < 6 ||
+        title.trim().length > 80) {
       errors.add('$p.title: must be a 6-80 char string');
     }
     final desc = t['description'];
@@ -240,8 +243,9 @@ class Coordinator {
   }) async {
     final user =
         'Goal: $goal\nType (guess, may be wrong): $typeGuess\nAnswers to prior questions: $priorAnswers';
-    final system =
-        context == PlanContext.retask ? reTaskingSystemPrompt : planningSystemPrompt;
+    final system = context == PlanContext.retask
+        ? reTaskingSystemPrompt
+        : planningSystemPrompt;
 
     var raw = await llm.complete(system: system, user: user);
     var obj = _tryDecode(raw);

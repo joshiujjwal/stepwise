@@ -1,5 +1,7 @@
 # stepwise
 
+[![CI](https://github.com/joshiujjwal/stepwise/actions/workflows/ci.yml/badge.svg)](https://github.com/joshiujjwal/stepwise/actions/workflows/ci.yml)
+
 > 🚧 **Status: Early development (design complete, scaffolding stage).**
 
 **On-device AI task coordinator.** You describe a goal in plain words; an on-device **Gemma** model breaks

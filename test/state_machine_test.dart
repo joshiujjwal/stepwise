@@ -27,7 +27,8 @@ void main() {
   });
 
   test('done gate requires all criteria satisfied', () {
-    final denied = applyTransition(_task(TaskState.awaitingApproval), TaskState.done);
+    final denied =
+        applyTransition(_task(TaskState.awaitingApproval), TaskState.done);
     expect(denied, isA<TransitionDenied>());
 
     final ok = applyTransition(

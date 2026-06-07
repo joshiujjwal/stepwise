@@ -14,7 +14,8 @@ void main() {
   });
 
   test('MicroTask.allCriteriaSatisfied reflects its criteria', () {
-    const c1 = AcceptanceCriterion(id: 'a', text: 'first thing', satisfied: true);
+    const c1 =
+        AcceptanceCriterion(id: 'a', text: 'first thing', satisfied: true);
     const c2 = AcceptanceCriterion(id: 'b', text: 'second thing');
     const task = MicroTask(
       id: 't1',
