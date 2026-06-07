@@ -62,8 +62,10 @@ jobs:
             > "$HOME/Library/MobileDevice/Provisioning Profiles/stepwise.mobileprovision"
 
       - name: Fill ExportOptions team ID
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          /usr/bin/sed -i '' "s/__APPLE_TEAM_ID__/${{ secrets.APPLE_TEAM_ID }}/" ios/ExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Set :teamID $APPLE_TEAM_ID" ios/ExportOptions.plist
 
       - name: Build IPA
         run: |

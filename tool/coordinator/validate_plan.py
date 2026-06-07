@@ -157,6 +157,7 @@ EXPECT = {
     "invalid_order_index.json": ("plan", False),
     "invalid_empty_criteria.json": ("plan", False),
     "invalid_evidence_type.json": ("plan", False),
+    "invalid_extra_keys.json": ("plan", False),
 }
 
 

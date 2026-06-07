@@ -50,8 +50,10 @@ Full spec: `docs/spec.md` (design decisions A–H are locked). Planner contract:
 - **Keep Dart validation in lockstep with `tool/coordinator/validate_plan.py`.** The Python suite is the
   guard; `fixtures/` are reused by Dart tests.
 - **Order is advisory.** `order_index` is a suggestion; any not-done task is "available". No hard deps.
-- **Event-sourced.** Mutations are events; task state + trends are projections. Don't mutate state without
-  writing an event.
+- **Event log + projections.** Every mutation also appends an `EventRecord`; **trends** are pure
+  projections of that log (`projections.dart`). Entity **state** (ideas/tasks) is held in memory and the
+  authoritative copy in v1 — it is not yet rebuilt by replaying events (that hydration path is a
+  persistence parking-lot item). Always append an event when you mutate, so trends/history stay correct.
 - **Acceptance gate.** `awaiting_approval → done` requires ALL `acceptance_criteria` satisfied (checkbox default).
 - **Models are huge + git-ignored.** Never commit `.task/.bin/.litertlm/.gguf`. The app loads them at runtime.
 - **est_minutes** ∈ 5–60, multiple of 5; >60 must be split. `DurationBucket`: ≤15→15, ≤30→30, ≤45→45, else 60plus.

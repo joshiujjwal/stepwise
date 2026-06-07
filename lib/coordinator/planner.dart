@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'prompts.dart';
 
 // PlannerResponse parsing + validation + the repair loop.
-// Validation rules mirror tool/coordinator/validate_plan.py (kept in lockstep;
-// the fixtures under tool/coordinator/fixtures/ are the regression guard).
+// The ERROR rules here mirror tool/coordinator/validate_plan.py exactly (a
+// response is valid iff there are no errors). The Python reference additionally
+// emits non-blocking WARNINGS (vague titles, soft 5-12 task-count) that do not
+// affect validity and are not reproduced here. Fixtures under
+// tool/coordinator/fixtures/ are the shared regression guard for both.
 
 const Set<String> kEvidenceTypes = {'checkbox', 'note', 'url', 'file'};
 const Set<String> kIdeaTypes = {
@@ -80,6 +83,7 @@ List<String> validatePlannerJson(
 }
 
 void _validateClarify(Map<String, dynamic> obj, List<String> errors) {
+  _rejectExtraKeys(obj, const {'action', 'questions'}, r'$', errors);
   final qs = obj['questions'];
   if (qs is! List || qs.isEmpty || qs.length > 2) {
     errors.add('\$.questions: must be a list of 1-2 questions');
@@ -93,13 +97,38 @@ void _validateClarify(Map<String, dynamic> obj, List<String> errors) {
   }
 }
 
+/// Reject keys not in [allowed] (mirrors Python `additionalProperties: false`).
+void _rejectExtraKeys(
+  Map<Object?, Object?> obj,
+  Set<String> allowed,
+  String path,
+  List<String> errors,
+) {
+  final extra = obj.keys
+      .map((k) => '$k')
+      .where((k) => !allowed.contains(k))
+      .toList()
+    ..sort();
+  if (extra.isNotEmpty) errors.add('$path: unexpected keys: $extra');
+}
+
 void _validatePlan(
   Map<String, dynamic> obj,
   PlanContext context,
   List<String> errors,
 ) {
+  _rejectExtraKeys(
+    obj,
+    const {'action', 'idea_type', 'summary', 'micro_tasks'},
+    r'$',
+    errors,
+  );
   if (!kIdeaTypes.contains(obj['idea_type'])) {
     errors.add('\$.idea_type: must be one of $kIdeaTypes');
+  }
+  final summary = obj['summary'];
+  if (summary != null && (summary is! String || summary.length > 200)) {
+    errors.add('\$.summary: must be a string <= 200 chars');
   }
   final tasks = obj['micro_tasks'];
   if (tasks is! List) {
@@ -120,6 +149,18 @@ void _validatePlan(
       errors.add('$p: must be an object');
       continue;
     }
+    _rejectExtraKeys(
+      t,
+      const {
+        'title',
+        'description',
+        'est_minutes',
+        'acceptance_criteria',
+        'order_index',
+      },
+      p,
+      errors,
+    );
     final title = t['title'];
     if (title is! String ||
         title.trim().length < 6 ||
@@ -165,6 +206,7 @@ void _validateCriteria(Object? acs, String p, List<String> errors) {
       errors.add('$cp: must be an object');
       continue;
     }
+    _rejectExtraKeys(ac, const {'text', 'evidence_type'}, cp, errors);
     final text = ac['text'];
     if (text is! String || text.trim().length < 4 || text.trim().length > 160) {
       errors.add('$cp.text: must be a 4-160 char string');

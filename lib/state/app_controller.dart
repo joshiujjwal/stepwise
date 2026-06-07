@@ -44,6 +44,13 @@ class PlanningSession {
 
 /// The single source of truth the UI talks to. Holds current entities, drives
 /// the coordinator, and appends an event for every mutation (spec §1-§2).
+///
+/// Note on event-sourcing scope (v1): the authoritative *entity* state
+/// (`_ideas`, `_tasks`) is held in memory and mutated directly; the event log is
+/// an append-only history that powers trends/projections (see projections.dart).
+/// State is NOT yet rebuilt by replaying events. When persistence lands (sqflite,
+/// parking lot), add a `hydrateFromEvents` path that replays the log to
+/// reconstruct entities on startup.
 class AppController extends ChangeNotifier {
   AppController({
     required this.coordinator,
@@ -223,10 +230,11 @@ class AppController extends ChangeNotifier {
   void stopTimer(String taskId) {
     final started = _timerRunning.remove(taskId);
     if (started == null) return;
-    final seconds = _now().difference(started).inSeconds;
+    final elapsed = _now().difference(started).inSeconds;
+    final seconds = elapsed < 0 ? 0 : elapsed; // guard clock skew
     final i = _indexOf(taskId);
     _tasks[i] = _tasks[i].copyWith(
-      focusSeconds: _tasks[i].focusSeconds + (seconds < 0 ? 0 : seconds),
+      focusSeconds: _tasks[i].focusSeconds + seconds,
     );
     _append(_tasks[i].ideaId, EventTypes.timerStopped,
         microTaskId: taskId, payload: {'seconds': seconds});
@@ -242,6 +250,9 @@ class AppController extends ChangeNotifier {
       priorAnswers: reason.isEmpty ? 'none' : reason,
       context: PlanContext.retask,
     );
+    // The re-tasking prompt instructs a plan, never a clarification. If the
+    // model clarifies anyway, leave the parent untouched (safe no-op) rather
+    // than corrupting state; the user can retry from the unchanged task.
     if (resp is! PlanResponse) return;
     _tasks[i] = parent.copyWith(state: TaskState.reTasked);
     _append(parent.ideaId, EventTypes.taskRetasked,
