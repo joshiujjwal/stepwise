@@ -1,0 +1,74 @@
+default_platform(:ios)
+
+# Stepwise — TestFlight delivery.
+#
+# Auth uses an App Store Connect API key (key id + issuer id + .p8 contents),
+# which avoids Apple ID passwords and 2FA in CI. See TESTFLIGHT.md for the
+# one-time setup and the exact secrets/env vars.
+#
+# Primary flow (matches .github/workflows/ios-testflight.yml):
+#   1) flutter build ipa --export-options-plist=ios/ExportOptions.plist
+#   2) bundle exec fastlane ios upload   (uploads the IPA Flutter produced)
+
+def asc_api_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch("ASC_KEY_ID"),
+    issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+    key_content: ENV.fetch("ASC_KEY_P8"),     # raw .p8 contents (not base64)
+    is_key_content_base64: false,
+    in_house: false,
+  )
+end
+
+platform :ios do
+  desc "Upload an already-built IPA to TestFlight"
+  lane :upload do |options|
+    ipa = options[:ipa] ||
+          Dir.glob("../build/ios/ipa/*.ipa").first ||
+          "../build/ios/ipa/stepwise.ipa"
+    UI.user_error!("No IPA found under build/ios/ipa/") unless File.exist?(ipa)
+    upload_to_testflight(
+      api_key: asc_api_key,
+      app_identifier: "com.joshiujjwal.stepwise",
+      ipa: ipa,
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["TF_CHANGELOG"] || "Automated TestFlight build of stepwise.",
+    )
+  end
+
+  desc "Build (gym) and upload — alternative to flutter build ipa + upload"
+  lane :beta do
+    increment_build_number(
+      xcodeproj: "Runner.xcodeproj",
+      build_number: (latest_testflight_build_number(
+        api_key: asc_api_key,
+        app_identifier: "com.joshiujjwal.stepwise",
+        initial_build_number: 0,
+      ) + 1).to_s,
+    )
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "build",
+      output_name: "stepwise.ipa",
+    )
+    upload_to_testflight(
+      api_key: asc_api_key,
+      app_identifier: "com.joshiujjwal.stepwise",
+      ipa: "build/stepwise.ipa",
+      skip_waiting_for_build_processing: true,
+    )
+  end
+
+  desc "Smoke-check App Store Connect auth (no build, no upload)"
+  lane :check_auth do
+    n = latest_testflight_build_number(
+      api_key: asc_api_key,
+      app_identifier: "com.joshiujjwal.stepwise",
+      initial_build_number: 0,
+    )
+    UI.success("Auth OK. Latest TestFlight build number: #{n}")
+  end
+end

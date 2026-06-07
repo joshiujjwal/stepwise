@@ -1,0 +1,9 @@
+# fastlane Appfile — identifies the app and team.
+# Safe to commit (no secrets). Update if your bundle id / team change.
+app_identifier("com.joshiujjwal.stepwise")
+
+# Apple Team IDs come from the environment so nothing org-specific is hard-coded.
+# APP_STORE_CONNECT_TEAM_ID = your App Store Connect team; APPLE_TEAM_ID = your
+# Developer Portal team (both 10 chars). See TESTFLIGHT.md.
+itc_team_id(ENV["APP_STORE_CONNECT_TEAM_ID"]) if ENV["APP_STORE_CONNECT_TEAM_ID"]
+team_id(ENV["APPLE_TEAM_ID"]) if ENV["APPLE_TEAM_ID"]

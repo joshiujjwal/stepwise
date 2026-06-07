@@ -58,3 +58,13 @@ docs/wireframes/package*.json
 # Python
 __pycache__/
 *.pyc
+
+# fastlane
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots/**/*.png
+ios/fastlane/test_output/
+ios/.bundle/
+*.mobileprovision
+*.p12
+*.p8

@@ -1,0 +1,9 @@
+source "https://rubygems.org"
+
+# Pinned so CI and local match. `bundle exec fastlane ...` uses this version.
+gem "fastlane", "~> 2.235"
+
+# fastlane loads its Google Play actions on startup (google-apis-core ->
+# representable), which needs multi_json transitively but doesn't pin it on
+# Ruby 3.3. Pinning here avoids the "multi_json is not part of the bundle" error.
+gem "multi_json"

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Export options for `flutter build ipa`. teamID is filled in CI from the
+  APPLE_TEAM_ID secret (the __APPLE_TEAM_ID__ placeholder is substituted).
+  For local builds, replace the placeholder with your 10-char Team ID.
+  Uses automatic signing so a matching distribution cert + App Store
+  provisioning profile (installed in CI) are selected for com.joshiujjwal.stepwise.
+-->
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>app-store</string>
+  <key>teamID</key>
+  <string>__APPLE_TEAM_ID__</string>
+  <key>signingStyle</key>
+  <string>automatic</string>
+  <key>uploadBitcode</key>
+  <false/>
+  <key>uploadSymbols</key>
+  <true/>
+  <key>destination</key>
+  <string>export</string>
+</dict>
+</plist>
