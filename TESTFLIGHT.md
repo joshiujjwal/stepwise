@@ -34,7 +34,7 @@ GitHub → repo **Settings → Secrets and variables → Actions → New reposit
 | `ASC_KEY_ID` | App Store Connect API **Key ID** |
 | `ASC_ISSUER_ID` | App Store Connect API **Issuer ID** |
 | `ASC_KEY_P8` | **Full contents** of the `.p8` file (paste the text, incl. BEGIN/END lines) |
-| `APPLE_TEAM_ID` | Your 10-char Developer **Team ID** |
+| `APPLE_TEAM_ID` | Your 10-char Developer **Team ID** — this account's is **`ABHGN3M845`** |
 | `APP_STORE_CONNECT_TEAM_ID` | App Store Connect team id (often same; from `fastlane`/portal) |
 | `DIST_CERT_P12_BASE64` | `base64 -i dist.p12` of your distribution cert |
 | `DIST_CERT_PASSWORD` | password you set when exporting the `.p12` |
