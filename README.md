@@ -44,6 +44,11 @@ python3 tool/coordinator/validate_plan.py
 [flutter_gemma](https://pub.dev/packages/flutter_gemma) instructions. Models are large and **git-ignored** —
 the app fetches/loads them at first run (see Phase 0 in [`TODO.md`](TODO.md)).
 
+> **Run it now (demo mode):** the app ships wired to an offline `FakeLlmClient`, so `flutter run` works
+> with **no model** — full capture → plan → execute → approve → trends flow, deterministic. Swap in
+> `GemmaLlmClient` (`lib/coordinator/gemma_llm_client.dart`) once a model is installed to use real
+> on-device Gemma.
+
 ## Project structure
 ```
 stepwise/

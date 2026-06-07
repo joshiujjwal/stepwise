@@ -24,9 +24,14 @@ Full spec: `docs/spec.md` (design decisions A–H are locked). Planner contract:
 
 ## Directory map
 - `lib/models/` — domain types + enums; `DurationBucket.fromMinutes` lives here.
-- `lib/coordinator/` — `prompts.dart` (system prompts), `planner.dart` (parse + validate + repair loop, `LlmClient`).
-- `lib/state/` — `task_state_machine.dart` (allowed transitions + guards).
-- `lib/ui/` — one file per screen; matches `docs/wireframes/`.
+- `lib/coordinator/` — `prompts.dart`, `planner.dart` (parse + validate + repair loop, `LlmClient`),
+  `fake_llm_client.dart` + `demo_planner.dart` (offline/demo + hermetic tests), `gemma_llm_client.dart`
+  (on-device adapter).
+- `lib/state/` — `event_store.dart` (append-only log), `projections.dart` (pure read-models),
+  `app_controller.dart` (`ChangeNotifier` orchestration), `app_scope.dart` (InheritedNotifier),
+  `task_state_machine.dart` (transitions + guards).
+- `lib/ui/` — one file per screen (`idea_screen`, `execute_screen`, `calendar_day_view`,
+  `idea_progress_screen`, `trends_screen`) + `widgets.dart`.
 - `tool/coordinator/` — `decomposition-contract.md` + `plan.schema.json` + `validate_plan.py` + `fixtures/` — **source of truth for planner output**.
 - `docs/spec.md` — the v1 spec; `docs/wireframes/` — the screens (start at `7-flow-board`).
 
