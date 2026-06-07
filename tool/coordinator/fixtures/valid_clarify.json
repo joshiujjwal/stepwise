@@ -1,0 +1,7 @@
+{
+  "action": "ask_clarifying",
+  "questions": [
+    "Are you filing yourself online, or using a tax preparer?",
+    "Do you have any self-employment or 1099 income this year?"
+  ]
+}

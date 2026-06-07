@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1168" height="1228" viewBox="0 0 1168 1228" font-family="Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1168" height="1228" fill="#ffffff"/>
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 z" fill="#1e1e1e"/></marker></defs>
+<rect x="24" y="24" width="1120" height="1180" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="48" y="59" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">←  Ideas</text>
+<text x="48" y="98" font-size="24" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">File my 2025 taxes</text>
+<rect x="384" y="82" width="39" height="22" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="393" y="96" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">tax</text>
+<rect x="431" y="82" width="60" height="22" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="440" y="96" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">active</text>
+<text x="48" y="135" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Step 3 of 8  ·  38% complete</text>
+<rect x="48" y="148" width="760" height="16" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="48" y="148" width="288" height="16" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="48" y="185" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Order is a suggestion — you can do any available task first.</text>
+<rect x="48" y="208" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="240" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1</text>
+<rect x="98" y="224" width="44" height="20" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="107" y="237" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">done</text>
+<text x="274" y="241" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Gather W-2 / 1099 forms</text>
+<rect x="844" y="222" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="235" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30 min</text>
+<text x="644" y="239" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">✓ 2/2</text>
+<rect x="48" y="274" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="306" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2</text>
+<rect x="98" y="290" width="44" height="20" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="107" y="303" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">done</text>
+<text x="274" y="307" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Choose tax software</text>
+<rect x="844" y="288" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="301" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<text x="644" y="305" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">✓ 1/1</text>
+<rect x="48" y="340" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="372" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3</text>
+<rect x="98" y="356" width="90" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="107" y="369" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">in progress</text>
+<text x="274" y="373" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Enter income details</text>
+<rect x="844" y="354" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="367" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45 min</text>
+<text x="644" y="371" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/2 · timer 06:12</text>
+<rect x="84" y="406" width="1036" height="188" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="104" y="432" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Definition of done</text>
+<rect x="104" y="446" width="22" height="22" rx="8" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="1"/>
+<text x="111" y="461" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">✓</text>
+<text x="136" y="461" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">All W-2 wages entered  (checkbox)</text>
+<rect x="104" y="480" width="22" height="22" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="136" y="495" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1099 income entered  (url evidence)</text>
+<rect x="444" y="478" width="360" height="26" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1"/>
+<text x="454" y="493" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">https://…  paste link to filed copy</text>
+<rect x="104" y="526" width="159" height="30" rx="8" fill="#a5d8ff" stroke="#868e96" stroke-width="1"/>
+<text x="116" y="544" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Submit for approval</text>
+<rect x="273" y="526" width="102" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="285" y="544" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Timer 06:12</text>
+<rect x="385" y="526" width="131" height="30" rx="8" fill="#d0bfff" stroke="#868e96" stroke-width="1"/>
+<text x="397" y="544" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Break this down</text>
+<rect x="526" y="526" width="88" height="30" rx="8" fill="#ffc9c9" stroke="#868e96" stroke-width="1"/>
+<text x="538" y="544" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;m stuck</text>
+<rect x="48" y="606" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="638" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">4</text>
+<rect x="98" y="622" width="130" height="20" rx="8" fill="#ffec99" stroke="none" stroke-width="1"/>
+<text x="107" y="635" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">awaiting approval</text>
+<text x="274" y="639" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Enter deductions</text>
+<rect x="844" y="620" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="633" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30 min</text>
+<text x="644" y="637" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">verify: paste confirmation</text>
+<rect x="48" y="672" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="704" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">5</text>
+<rect x="98" y="688" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="107" y="701" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="274" y="705" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Review the return</text>
+<rect x="844" y="686" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="699" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">20 min</text>
+<text x="644" y="703" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/1</text>
+<rect x="48" y="738" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="770" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">6</text>
+<rect x="98" y="754" width="64" height="20" rx="8" fill="#ffc9c9" stroke="none" stroke-width="1"/>
+<text x="107" y="767" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">blocked</text>
+<text x="274" y="771" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Find last year&#x27;s AGI</text>
+<rect x="844" y="752" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="765" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10 min</text>
+<text x="644" y="769" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">stuck: can&#x27;t locate 2024 return</text>
+<text x="114" y="815" font-size="12" fill="#d0bfff" text-anchor="start" font-family="Helvetica, Arial, sans-serif">&gt; re-tasked into smaller steps:</text>
+<rect x="114" y="828" width="1006" height="44" rx="8" fill="#fbf6ff" stroke="#d0bfff" stroke-width="1"/>
+<rect x="132" y="839" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="141" y="852" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="274" y="855" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Search email for the 2024 PDF</text>
+<rect x="1004" y="838" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="1013" y="851" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10 min</text>
+<rect x="114" y="880" width="1006" height="44" rx="8" fill="#fbf6ff" stroke="#d0bfff" stroke-width="1"/>
+<rect x="132" y="891" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="141" y="904" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="274" y="907" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Check IRS online account for AGI</text>
+<rect x="1004" y="890" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="1013" y="903" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<rect x="48" y="938" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="970" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">7</text>
+<rect x="98" y="954" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="107" y="967" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="274" y="971" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Submit the return</text>
+<rect x="844" y="952" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="965" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<text x="644" y="969" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/1</text>
+<rect x="48" y="1004" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="72" y="1036" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">8</text>
+<rect x="98" y="1020" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="107" y="1033" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="274" y="1037" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Save the confirmation</text>
+<rect x="844" y="1018" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="853" y="1031" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10 min</text>
+<text x="644" y="1035" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/1</text>
+</svg>

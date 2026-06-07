@@ -1,0 +1,25 @@
+{
+  "action": "propose_plan",
+  "idea_type": "tax",
+  "summary": "Finer steps to locate last year's AGI.",
+  "micro_tasks": [
+    {
+      "title": "Search email for the 2024 tax PDF",
+      "description": "Search your inbox for the 2024 return or the e-file confirmation.",
+      "est_minutes": 10,
+      "order_index": 1,
+      "acceptance_criteria": [
+        { "text": "Found the 2024 return PDF, or confirmed it is not in email", "evidence_type": "checkbox" }
+      ]
+    },
+    {
+      "title": "Check the IRS online account for AGI",
+      "description": "Log in to your IRS online account and open the prior-year transcript.",
+      "est_minutes": 15,
+      "order_index": 2,
+      "acceptance_criteria": [
+        { "text": "2024 AGI value located in the IRS account", "evidence_type": "note" }
+      ]
+    }
+  ]
+}

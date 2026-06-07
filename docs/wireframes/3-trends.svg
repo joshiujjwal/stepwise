@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1168" height="868" viewBox="0 0 1168 868" font-family="Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="1168" height="868" fill="#ffffff"/>
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 z" fill="#1e1e1e"/></marker></defs>
+<rect x="24" y="24" width="1120" height="820" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="48" y="66" font-size="22" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Trends</text>
+<text x="48" y="94" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Last 30 days · personal productivity</text>
+<rect x="48" y="116" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="66" y="144" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Throughput — tasks done / day</text>
+<rect x="72" y="252" width="26" height="54" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="112" y="216" width="26" height="90" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="152" y="270" width="26" height="36" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="192" y="198" width="26" height="108" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="232" y="234" width="26" height="72" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="272" y="180" width="26" height="126" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="312" y="216" width="26" height="90" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="413" y="116" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="431" y="144" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Current streak</text>
+<text x="527" y="235" font-size="34" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">6 days</text>
+<rect x="778" y="116" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="796" y="144" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Completion rate</text>
+<ellipse cx="948" cy="241" rx="55" ry="55" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<ellipse cx="948" cy="241" rx="38" ry="38" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="927" y="248" font-size="26" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">72%</text>
+<rect x="48" y="360" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="66" y="388" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Estimate vs actual</text>
+<rect x="78" y="478" width="22" height="72" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="104" y="459" width="22" height="91" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="90" y="567" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Docs</text>
+<rect x="178" y="514" width="22" height="36" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="204" y="529" width="22" height="21" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="190" y="567" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Tool</text>
+<rect x="278" y="442" width="22" height="108" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="304" y="426" width="22" height="124" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="284" y="567" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Income</text>
+<rect x="239" y="372" width="37" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="248" y="385" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">est</text>
+<rect x="294" y="372" width="57" height="20" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="303" y="385" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">actual</text>
+<rect x="413" y="360" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="431" y="388" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Where you get stuck</text>
+<rect x="443" y="474" width="40" height="72" rx="8" fill="#ffc9c9" stroke="none" stroke-width="1"/>
+<text x="442" y="565" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">blocked</text>
+<rect x="538" y="420" width="40" height="126" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="531" y="565" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">re-tasked</text>
+<rect x="633" y="510" width="40" height="36" rx="8" fill="#ffec99" stroke="none" stroke-width="1"/>
+<text x="629" y="565" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">rejected</text>
+<rect x="778" y="360" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="796" y="388" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Focused time / idea (min)</text>
+<text x="798" y="421" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Taxes</text>
+<rect x="868" y="410" width="192" height="18" rx="8" fill="#96f2d7" stroke="none" stroke-width="1"/>
+<text x="1066" y="420" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">120</text>
+<text x="798" y="465" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Trip</text>
+<rect x="868" y="454" width="96" height="18" rx="8" fill="#96f2d7" stroke="none" stroke-width="1"/>
+<text x="970" y="464" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">60</text>
+<text x="798" y="509" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Health</text>
+<rect x="868" y="498" width="56" height="18" rx="8" fill="#96f2d7" stroke="none" stroke-width="1"/>
+<text x="930" y="508" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">35</text>
+</svg>

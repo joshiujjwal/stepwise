@@ -1,0 +1,15 @@
+{
+  "action": "do_it_for_me",
+  "idea_type": "errand",
+  "micro_tasks": [
+    {
+      "title": "Book the dentist appointment",
+      "description": "Call or use the portal to book a checkup.",
+      "est_minutes": 15,
+      "order_index": 1,
+      "acceptance_criteria": [
+        { "text": "Appointment date confirmed", "evidence_type": "checkbox" }
+      ]
+    }
+  ]
+}

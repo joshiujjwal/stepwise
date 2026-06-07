@@ -1,0 +1,414 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3808" height="2408" viewBox="0 0 3808 2408" font-family="Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="3808" height="2408" fill="#ffffff"/>
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 z" fill="#1e1e1e"/></marker></defs>
+<rect x="24" y="184" width="390" height="720" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="44" y="215" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="44" y="228" width="56" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="57" y="247" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea</text>
+<rect x="108" y="228" width="79" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="121" y="247" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Execute</text>
+<text x="44" y="286" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Describe a goal in your own words</text>
+<rect x="44" y="300" width="350" height="300" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="58" y="332" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Help me file my 2025 taxes for</text>
+<text x="58" y="358" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">the first time</text>
+<polyline points="174,341 174,363" fill="none" stroke="#1e1e1e" stroke-width="2"/>
+<rect x="241" y="372" width="106" height="19" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="246" y="385" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">typing indicator</text>
+<polyline points="274,374 182,356" fill="none" stroke="#868e96" stroke-width="1" marker-end="url(#ah)"/>
+<text x="44" y="629" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;ll ask 1–2 quick questions, then propose</text>
+<text x="44" y="649" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">a step-by-step plan you can confirm.</text>
+<rect x="224" y="828" width="138" height="30" rx="8" fill="#a5d8ff" stroke="#868e96" stroke-width="1"/>
+<text x="236" y="846" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Start planning →</text>
+<rect x="474" y="184" width="390" height="720" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="494" y="215" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="494" y="228" width="56" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="507" y="247" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea</text>
+<rect x="558" y="228" width="79" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="571" y="247" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Execute</text>
+<text x="494" y="286" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">A quick back-and-forth, then a plan</text>
+<rect x="594" y="304" width="250" height="35" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="606" y="325" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Help me file my 2025 taxes</text>
+<rect x="494" y="349" width="300" height="54" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="506" y="370" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Quick Q: filing yourself online,</text>
+<text x="506" y="389" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">or with a preparer?</text>
+<rect x="664" y="413" width="180" height="35" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="676" y="434" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Myself, online</text>
+<rect x="494" y="458" width="330" height="130" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="506" y="479" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Here&#x27;s an 8-step plan:</text>
+<text x="506" y="498" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1. Gather W-2 / 1099 — 30m</text>
+<text x="506" y="517" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2. Pick tax software — 15m</text>
+<text x="506" y="536" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3. Enter income — 45m</text>
+<text x="506" y="555" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">4. Enter deductions — 30m</text>
+<text x="506" y="574" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">   + 4 more steps</text>
+<rect x="494" y="600" width="109" height="30" rx="8" fill="#b2f2bb" stroke="#868e96" stroke-width="1"/>
+<text x="506" y="618" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Confirm plan</text>
+<rect x="613" y="600" width="66" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="625" y="618" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Revise</text>
+<rect x="494" y="650" width="70" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<ellipse cx="510" cy="665" rx="4" ry="4" fill="#868e96" stroke="none" stroke-width="1"/>
+<ellipse cx="528" cy="665" rx="4" ry="4" fill="#868e96" stroke="none" stroke-width="1"/>
+<ellipse cx="546" cy="665" rx="4" ry="4" fill="#868e96" stroke="none" stroke-width="1"/>
+<text x="114" y="157" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1 · Capture (typing indicator)</text>
+<text x="564" y="157" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2 · Clarify, then confirm the plan</text>
+<rect x="1144" y="184" width="1120" height="780" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="1168" y="226" font-size="22" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="1914" y="206" width="79" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1927" y="225" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Do Next</text>
+<rect x="2003" y="206" width="64" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="2016" y="225" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Ideas</text>
+<rect x="2077" y="206" width="72" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="2090" y="225" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Trends</text>
+<text x="1168" y="293" font-size="18" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">What can you do right now?</text>
+<text x="1168" y="326" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Time I have:</text>
+<rect x="1284" y="308" width="49" height="30" rx="8" fill="#96f2d7" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1297" y="327" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">All</text>
+<rect x="1341" y="308" width="72" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="1354" y="327" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<rect x="1421" y="308" width="72" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="1434" y="327" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30 min</text>
+<rect x="1501" y="308" width="72" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="1514" y="327" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45 min</text>
+<rect x="1581" y="308" width="49" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="1594" y="327" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">60+</text>
+<text x="1168" y="361" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Your next 3 suggested steps · order is only a suggestion — start any of them</text>
+<rect x="1168" y="380" width="1072" height="156" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<ellipse cx="1205" cy="417" rx="17" ry="17" fill="#ffffff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1201" y="422" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1</text>
+<text x="1240" y="419" font-size="18" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Gather all tax documents</text>
+<rect x="1240" y="436" width="176" height="20" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="1249" y="449" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">tax · File my 2025 taxes</text>
+<rect x="2150" y="402" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2159" y="415" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30 min</text>
+<rect x="2110" y="436" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="2119" y="449" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1964" y="417" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">acceptance 0 / 1</text>
+<rect x="1240" y="488" width="59" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1252" y="506" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Start</text>
+<rect x="1309" y="488" width="59" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1321" y="506" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Timer</text>
+<rect x="1378" y="488" width="116" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1390" y="506" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Break it down</text>
+<rect x="1504" y="488" width="88" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1516" y="506" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;m stuck</text>
+<rect x="1168" y="552" width="1072" height="156" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<ellipse cx="1205" cy="589" rx="17" ry="17" fill="#ffffff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1201" y="594" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2</text>
+<text x="1240" y="591" font-size="18" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Pick a tax tool or preparer</text>
+<rect x="1240" y="608" width="176" height="20" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="1249" y="621" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">tax · File my 2025 taxes</text>
+<rect x="2150" y="574" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2159" y="587" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<rect x="2110" y="608" width="90" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2119" y="621" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">in progress</text>
+<text x="1964" y="589" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">acceptance 0 / 2</text>
+<text x="1964" y="619" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">timer 06:12</text>
+<rect x="1240" y="660" width="59" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1252" y="678" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Start</text>
+<rect x="1309" y="660" width="59" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1321" y="678" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Timer</text>
+<rect x="1378" y="660" width="116" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1390" y="678" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Break it down</text>
+<rect x="1504" y="660" width="88" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1516" y="678" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;m stuck</text>
+<rect x="1168" y="724" width="1072" height="156" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<ellipse cx="1205" cy="761" rx="17" ry="17" fill="#ffffff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1201" y="766" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3</text>
+<text x="1240" y="763" font-size="18" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Book dentist appointment</text>
+<rect x="1240" y="780" width="156" height="20" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="1249" y="793" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">errand · Health admin</text>
+<rect x="2150" y="746" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2159" y="759" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<rect x="2110" y="780" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="2119" y="793" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1964" y="761" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">acceptance 0 / 1</text>
+<rect x="1240" y="832" width="59" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1252" y="850" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Start</text>
+<rect x="1309" y="832" width="59" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1321" y="850" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Timer</text>
+<rect x="1378" y="832" width="116" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1390" y="850" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Break it down</text>
+<rect x="1504" y="832" width="88" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1516" y="850" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;m stuck</text>
+<rect x="2464" y="184" width="390" height="772" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="2484" y="215" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="2484" y="228" width="56" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="2497" y="247" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea</text>
+<rect x="2548" y="228" width="79" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2561" y="247" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Execute</text>
+<rect x="2484" y="266" width="150" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<rect x="2559" y="266" width="75" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2507" y="284" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">List</text>
+<text x="2567" y="284" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Calendar</text>
+<text x="2484" y="319" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Fits in:</text>
+<rect x="2548" y="302" width="41" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="2561" y="321" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15</text>
+<rect x="2595" y="302" width="41" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="2608" y="321" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30</text>
+<rect x="2642" y="302" width="41" height="30" rx="8" fill="#96f2d7" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2655" y="321" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45</text>
+<rect x="2689" y="302" width="49" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="2702" y="321" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">60+</text>
+<text x="2480" y="357" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">9 AM</text>
+<polyline points="2530,354 2830,354" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="2480" y="429" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10</text>
+<polyline points="2530,426 2830,426" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="2480" y="501" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">11</text>
+<polyline points="2530,498 2830,498" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="2480" y="573" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">12 PM</text>
+<polyline points="2530,570 2830,570" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="2480" y="645" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1 PM</text>
+<polyline points="2530,642 2830,642" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="2480" y="717" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2</text>
+<polyline points="2530,714 2830,714" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="2480" y="789" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3</text>
+<polyline points="2530,786 2830,786" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<rect x="2534" y="354" width="292" height="36" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2544" y="369" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Gather tax documents</text>
+<text x="2778" y="368" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30m</text>
+<rect x="2534" y="426" width="292" height="18" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2544" y="441" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Pick a tax tool</text>
+<text x="2778" y="440" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15m</text>
+<rect x="2534" y="498" width="292" height="18" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2544" y="513" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Book dentist</text>
+<text x="2778" y="512" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15m</text>
+<rect x="2534" y="642" width="292" height="54" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="2544" y="657" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Enter income details</text>
+<text x="2778" y="656" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45m</text>
+<polyline points="2530,534 2830,534" fill="none" stroke="#fa5252" stroke-width="1"/>
+<rect x="2539" y="525" width="26" height="18" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="2544" y="536" font-size="10" fill="#fa5252" text-anchor="start" font-family="Helvetica, Arial, sans-serif">now</text>
+<rect x="2484" y="878" width="350" height="56" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="2498" y="899" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Unscheduled (2) — drag onto your day</text>
+<rect x="2498" y="908" width="143" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="2507" y="921" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Review return · 20m</text>
+<rect x="2684" y="908" width="143" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="2693" y="921" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Submit return · 15m</text>
+<text x="24" y="1224" font-size="22" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Micro-task lifecycle (v1)</text>
+<rect x="44" y="1350" width="190" height="70" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="121" y="1390" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<rect x="344" y="1350" width="190" height="70" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="391" y="1390" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">in_progress</text>
+<rect x="644" y="1350" width="190" height="70" rx="8" fill="#ffec99" stroke="#1e1e1e" stroke-width="2"/>
+<text x="664" y="1390" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">awaiting approval</text>
+<rect x="944" y="1350" width="190" height="70" rx="8" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="2"/>
+<text x="1021" y="1390" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">done</text>
+<rect x="344" y="1560" width="190" height="70" rx="8" fill="#ffc9c9" stroke="#1e1e1e" stroke-width="2"/>
+<text x="408" y="1600" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">blocked</text>
+<rect x="644" y="1560" width="190" height="70" rx="8" fill="#d0bfff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="699" y="1600" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">re-tasked</text>
+<rect x="944" y="1560" width="190" height="70" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="2"/>
+<text x="973" y="1600" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo (children)</text>
+<polyline points="234,1385 344,1385" fill="none" stroke="#1e1e1e" stroke-width="1" marker-end="url(#ah)"/>
+<rect x="267" y="1360" width="43" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="272" y="1374" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">start</text>
+<polyline points="534,1385 644,1385" fill="none" stroke="#1e1e1e" stroke-width="1" marker-end="url(#ah)"/>
+<rect x="528" y="1360" width="122" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="533" y="1374" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">submit + evidence</text>
+<polyline points="834,1385 944,1385" fill="none" stroke="#1e1e1e" stroke-width="1" marker-end="url(#ah)"/>
+<rect x="808" y="1360" width="161" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="813" y="1374" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">confirm  ✓ all criteria</text>
+<polyline points="664,1420 604,1480 514,1420" fill="none" stroke="#868e96" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="466" y="1467" width="175" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="471" y="1481" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">reject (criteria not met)</text>
+<polyline points="439,1420 439,1560" fill="none" stroke="#ffc9c9" stroke-width="1" marker-end="url(#ah)"/>
+<rect x="449" y="1479" width="135" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="454" y="1493" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;m stuck (+reason)</text>
+<polyline points="504,1420 674,1560" fill="none" stroke="#d0bfff" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="513" y="1521" width="181" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="518" y="1535" font-size="12" fill="#d0bfff" text-anchor="start" font-family="Helvetica, Arial, sans-serif">break this down (any task)</text>
+<polyline points="534,1595 644,1595" fill="none" stroke="#1e1e1e" stroke-width="1" marker-end="url(#ah)"/>
+<rect x="554" y="1570" width="69" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="559" y="1584" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">decompose</text>
+<polyline points="834,1595 944,1595" fill="none" stroke="#1e1e1e" stroke-width="1" marker-end="url(#ah)"/>
+<rect x="825" y="1570" width="128" height="21" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="830" y="1584" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">spawns finer tasks</text>
+<rect x="44" y="1680" width="1090" height="70" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="64" y="1707" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea status (derived from its leaf tasks):</text>
+<text x="64" y="1733" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">planning  →  active  →  stalled (≥1 blocked leaf)  →  done (all leaf tasks done)</text>
+<text x="44" y="1792" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Legend:</text>
+<rect x="114" y="1776" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="123" y="1789" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<rect x="170" y="1776" width="90" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="179" y="1789" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">in progress</text>
+<rect x="272" y="1776" width="130" height="20" rx="8" fill="#ffec99" stroke="none" stroke-width="1"/>
+<text x="281" y="1789" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">awaiting approval</text>
+<rect x="414" y="1776" width="44" height="20" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="423" y="1789" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">done</text>
+<rect x="470" y="1776" width="64" height="20" rx="8" fill="#ffc9c9" stroke="none" stroke-width="1"/>
+<text x="479" y="1789" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">blocked</text>
+<rect x="546" y="1776" width="77" height="20" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="555" y="1789" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">re-tasked</text>
+<rect x="1344" y="1204" width="1120" height="1180" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="1368" y="1239" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">←  Ideas</text>
+<text x="1368" y="1278" font-size="24" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">File my 2025 taxes</text>
+<rect x="1704" y="1262" width="39" height="22" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="1713" y="1276" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">tax</text>
+<rect x="1751" y="1262" width="60" height="22" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="1760" y="1276" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">active</text>
+<text x="1368" y="1315" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Step 3 of 8  ·  38% complete</text>
+<rect x="1368" y="1328" width="760" height="16" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="1368" y="1328" width="288" height="16" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="1368" y="1365" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Order is a suggestion — you can do any available task first.</text>
+<rect x="1368" y="1388" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="1420" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1</text>
+<rect x="1418" y="1404" width="44" height="20" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="1427" y="1417" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">done</text>
+<text x="1594" y="1421" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Gather W-2 / 1099 forms</text>
+<rect x="2164" y="1402" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="1415" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30 min</text>
+<text x="1964" y="1419" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">✓ 2/2</text>
+<rect x="1368" y="1454" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="1486" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2</text>
+<rect x="1418" y="1470" width="44" height="20" rx="8" fill="#b2f2bb" stroke="none" stroke-width="1"/>
+<text x="1427" y="1483" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">done</text>
+<text x="1594" y="1487" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Choose tax software</text>
+<rect x="2164" y="1468" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="1481" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<text x="1964" y="1485" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">✓ 1/1</text>
+<rect x="1368" y="1520" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="1552" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3</text>
+<rect x="1418" y="1536" width="90" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="1427" y="1549" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">in progress</text>
+<text x="1594" y="1553" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Enter income details</text>
+<rect x="2164" y="1534" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="1547" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45 min</text>
+<text x="1964" y="1551" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/2 · timer 06:12</text>
+<rect x="1404" y="1586" width="1036" height="188" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="1424" y="1612" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Definition of done</text>
+<rect x="1424" y="1626" width="22" height="22" rx="8" fill="#b2f2bb" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1431" y="1641" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">✓</text>
+<text x="1456" y="1641" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">All W-2 wages entered  (checkbox)</text>
+<rect x="1424" y="1660" width="22" height="22" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="1456" y="1675" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1099 income entered  (url evidence)</text>
+<rect x="1764" y="1658" width="360" height="26" rx="8" fill="#ffffff" stroke="#868e96" stroke-width="1"/>
+<text x="1774" y="1673" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">https://…  paste link to filed copy</text>
+<rect x="1424" y="1706" width="159" height="30" rx="8" fill="#a5d8ff" stroke="#868e96" stroke-width="1"/>
+<text x="1436" y="1724" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Submit for approval</text>
+<rect x="1593" y="1706" width="102" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="1605" y="1724" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Timer 06:12</text>
+<rect x="1705" y="1706" width="131" height="30" rx="8" fill="#d0bfff" stroke="#868e96" stroke-width="1"/>
+<text x="1717" y="1724" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Break this down</text>
+<rect x="1846" y="1706" width="88" height="30" rx="8" fill="#ffc9c9" stroke="#868e96" stroke-width="1"/>
+<text x="1858" y="1724" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;m stuck</text>
+<rect x="1368" y="1786" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="1818" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">4</text>
+<rect x="1418" y="1802" width="130" height="20" rx="8" fill="#ffec99" stroke="none" stroke-width="1"/>
+<text x="1427" y="1815" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">awaiting approval</text>
+<text x="1594" y="1819" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Enter deductions</text>
+<rect x="2164" y="1800" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="1813" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30 min</text>
+<text x="1964" y="1817" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">verify: paste confirmation</text>
+<rect x="1368" y="1852" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="1884" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">5</text>
+<rect x="1418" y="1868" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="1427" y="1881" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1594" y="1885" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Review the return</text>
+<rect x="2164" y="1866" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="1879" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">20 min</text>
+<text x="1964" y="1883" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/1</text>
+<rect x="1368" y="1918" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="1950" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">6</text>
+<rect x="1418" y="1934" width="64" height="20" rx="8" fill="#ffc9c9" stroke="none" stroke-width="1"/>
+<text x="1427" y="1947" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">blocked</text>
+<text x="1594" y="1951" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Find last year&#x27;s AGI</text>
+<rect x="2164" y="1932" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="1945" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10 min</text>
+<text x="1964" y="1949" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">stuck: can&#x27;t locate 2024 return</text>
+<text x="1434" y="1995" font-size="12" fill="#d0bfff" text-anchor="start" font-family="Helvetica, Arial, sans-serif">&gt; re-tasked into smaller steps:</text>
+<rect x="1434" y="2008" width="1006" height="44" rx="8" fill="#fbf6ff" stroke="#d0bfff" stroke-width="1"/>
+<rect x="1452" y="2019" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="1461" y="2032" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1594" y="2035" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Search email for the 2024 PDF</text>
+<rect x="2324" y="2018" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2333" y="2031" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10 min</text>
+<rect x="1434" y="2060" width="1006" height="44" rx="8" fill="#fbf6ff" stroke="#d0bfff" stroke-width="1"/>
+<rect x="1452" y="2071" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="1461" y="2084" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1594" y="2087" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Check IRS online account for AGI</text>
+<rect x="2324" y="2070" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2333" y="2083" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<rect x="1368" y="2118" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="2150" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">7</text>
+<rect x="1418" y="2134" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="1427" y="2147" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1594" y="2151" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Submit the return</text>
+<rect x="2164" y="2132" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="2145" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15 min</text>
+<text x="1964" y="2149" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/1</text>
+<rect x="1368" y="2184" width="1072" height="56" rx="8" fill="#ffffff" stroke="#e9ecef" stroke-width="1"/>
+<text x="1392" y="2216" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">8</text>
+<rect x="1418" y="2200" width="44" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="1427" y="2213" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">todo</text>
+<text x="1594" y="2217" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Save the confirmation</text>
+<rect x="2164" y="2198" width="57" height="20" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<text x="2173" y="2211" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10 min</text>
+<text x="1964" y="2215" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">0/1</text>
+<rect x="2664" y="1204" width="1120" height="820" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="2688" y="1246" font-size="22" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Trends</text>
+<text x="2688" y="1274" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Last 30 days · personal productivity</text>
+<rect x="2688" y="1296" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="2706" y="1324" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Throughput — tasks done / day</text>
+<rect x="2712" y="1432" width="26" height="54" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="2752" y="1396" width="26" height="90" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="2792" y="1450" width="26" height="36" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="2832" y="1378" width="26" height="108" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="2872" y="1414" width="26" height="72" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="2912" y="1360" width="26" height="126" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="2952" y="1396" width="26" height="90" rx="8" fill="#a5d8ff" stroke="none" stroke-width="1"/>
+<rect x="3053" y="1296" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="3071" y="1324" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Current streak</text>
+<text x="3167" y="1415" font-size="34" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">6 days</text>
+<rect x="3418" y="1296" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="3436" y="1324" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Completion rate</text>
+<ellipse cx="3588" cy="1421" rx="55" ry="55" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<ellipse cx="3588" cy="1421" rx="38" ry="38" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="3567" y="1428" font-size="26" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">72%</text>
+<rect x="2688" y="1540" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="2706" y="1568" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Estimate vs actual</text>
+<rect x="2718" y="1658" width="22" height="72" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="2744" y="1639" width="22" height="91" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="2730" y="1747" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Docs</text>
+<rect x="2818" y="1694" width="22" height="36" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="2844" y="1709" width="22" height="21" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="2830" y="1747" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Tool</text>
+<rect x="2918" y="1622" width="22" height="108" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<rect x="2944" y="1606" width="22" height="124" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="2924" y="1747" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Income</text>
+<rect x="2879" y="1552" width="37" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="2888" y="1565" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">est</text>
+<rect x="2934" y="1552" width="57" height="20" rx="8" fill="#ffd8a8" stroke="none" stroke-width="1"/>
+<text x="2943" y="1565" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">actual</text>
+<rect x="3053" y="1540" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="3071" y="1568" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Where you get stuck</text>
+<rect x="3083" y="1654" width="40" height="72" rx="8" fill="#ffc9c9" stroke="none" stroke-width="1"/>
+<text x="3082" y="1745" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">blocked</text>
+<rect x="3178" y="1600" width="40" height="126" rx="8" fill="#d0bfff" stroke="none" stroke-width="1"/>
+<text x="3171" y="1745" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">re-tasked</text>
+<rect x="3273" y="1690" width="40" height="36" rx="8" fill="#ffec99" stroke="none" stroke-width="1"/>
+<text x="3269" y="1745" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">rejected</text>
+<rect x="3418" y="1540" width="341" height="220" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+<text x="3436" y="1568" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Focused time / idea (min)</text>
+<text x="3438" y="1601" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Taxes</text>
+<rect x="3508" y="1590" width="192" height="18" rx="8" fill="#96f2d7" stroke="none" stroke-width="1"/>
+<text x="3706" y="1600" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">120</text>
+<text x="3438" y="1645" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Trip</text>
+<rect x="3508" y="1634" width="96" height="18" rx="8" fill="#96f2d7" stroke="none" stroke-width="1"/>
+<text x="3610" y="1644" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">60</text>
+<text x="3438" y="1689" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Health</text>
+<rect x="3508" y="1678" width="56" height="18" rx="8" fill="#96f2d7" stroke="none" stroke-width="1"/>
+<text x="3570" y="1688" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">35</text>
+<text x="24" y="52" font-size="30" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">User Flow — Idea → Execute (v1)</text>
+<polyline points="864,524 1144,544" fill="none" stroke="#2f9e44" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="941" y="508" width="125" height="27" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="946" y="526" font-size="15" fill="#2f9e44" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Confirm plan →</text>
+<polyline points="2264,484 2464,484" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="2297" y="458" width="133" height="27" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="2302" y="476" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">List ⇄ Calendar</text>
+<polyline points="1704,964 1904,1204" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="1712" y="1058" width="183" height="27" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="1717" y="1076" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Tap a task → progress</text>
+<polyline points="2144,254 2924,1204" fill="none" stroke="#868e96" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+<rect x="2488" y="703" width="92" height="27" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="2493" y="721" font-size="15" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Trends tab</text>
+<text x="24" y="1175" font-size="16" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Reference — every micro-task follows this lifecycle</text>
+</svg>

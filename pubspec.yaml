@@ -1,0 +1,27 @@
+name: stepwise
+description: "On-device AI task coordinator — turns a goal into time-boxed, human-executed micro-tasks with approval-gated state and a focus timer. Gemma runs locally; nothing leaves your phone."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # On-device Gemma (iOS + Android). Run `flutter pub add flutter_gemma` to refresh.
+  flutter_gemma: ^0.16.4
+
+  # --- Choose during Phase 0 (left commented to keep `pub get` clean until pinned) ---
+  # sqflite: ^2.3.3          # event-sourced local store
+  # path_provider: ^2.1.4    # app documents dir for the DB + downloaded model
+  # intl: ^0.19.0            # date/time formatting for the calendar view
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,33 @@
+{
+  "action": "propose_plan",
+  "idea_type": "errand",
+  "micro_tasks": [
+    {
+      "title": "Book the dentist appointment",
+      "description": "Call or use the portal to book a checkup.",
+      "est_minutes": 120,
+      "order_index": 1,
+      "acceptance_criteria": [
+        { "text": "Appointment date confirmed", "evidence_type": "checkbox" }
+      ]
+    },
+    {
+      "title": "Add the appointment to your calendar",
+      "description": "Put the date and time on your calendar.",
+      "est_minutes": 5,
+      "order_index": 2,
+      "acceptance_criteria": [
+        { "text": "Event is on your calendar", "evidence_type": "checkbox" }
+      ]
+    },
+    {
+      "title": "Note your insurance member ID",
+      "description": "Find your insurance card and write down the member ID.",
+      "est_minutes": 10,
+      "order_index": 3,
+      "acceptance_criteria": [
+        { "text": "Member ID written down", "evidence_type": "note" }
+      ]
+    }
+  ]
+}

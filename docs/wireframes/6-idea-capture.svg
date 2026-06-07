@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="888" height="808" viewBox="0 0 888 808" font-family="Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="888" height="808" fill="#ffffff"/>
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 z" fill="#1e1e1e"/></marker></defs>
+<rect x="24" y="64" width="390" height="720" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="44" y="95" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="44" y="108" width="56" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="57" y="127" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea</text>
+<rect x="108" y="108" width="79" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="121" y="127" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Execute</text>
+<text x="44" y="166" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Describe a goal in your own words</text>
+<rect x="44" y="180" width="350" height="300" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="58" y="212" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Help me file my 2025 taxes for</text>
+<text x="58" y="238" font-size="15" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">the first time</text>
+<polyline points="174,221 174,243" fill="none" stroke="#1e1e1e" stroke-width="2"/>
+<rect x="241" y="252" width="106" height="19" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="246" y="265" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">typing indicator</text>
+<polyline points="274,254 182,236" fill="none" stroke="#868e96" stroke-width="1" marker-end="url(#ah)"/>
+<text x="44" y="509" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">I&#x27;ll ask 1–2 quick questions, then propose</text>
+<text x="44" y="529" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">a step-by-step plan you can confirm.</text>
+<rect x="224" y="708" width="138" height="30" rx="8" fill="#a5d8ff" stroke="#868e96" stroke-width="1"/>
+<text x="236" y="726" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Start planning →</text>
+<rect x="474" y="64" width="390" height="720" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="494" y="95" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="494" y="108" width="56" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="507" y="127" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea</text>
+<rect x="558" y="108" width="79" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="571" y="127" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Execute</text>
+<text x="494" y="166" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">A quick back-and-forth, then a plan</text>
+<rect x="594" y="184" width="250" height="35" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="606" y="205" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Help me file my 2025 taxes</text>
+<rect x="494" y="229" width="300" height="54" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="506" y="250" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Quick Q: filing yourself online,</text>
+<text x="506" y="269" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">or with a preparer?</text>
+<rect x="664" y="293" width="180" height="35" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="676" y="314" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Myself, online</text>
+<rect x="494" y="338" width="330" height="130" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="506" y="359" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Here&#x27;s an 8-step plan:</text>
+<text x="506" y="378" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1. Gather W-2 / 1099 — 30m</text>
+<text x="506" y="397" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2. Pick tax software — 15m</text>
+<text x="506" y="416" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3. Enter income — 45m</text>
+<text x="506" y="435" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">4. Enter deductions — 30m</text>
+<text x="506" y="454" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">   + 4 more steps</text>
+<rect x="494" y="480" width="109" height="30" rx="8" fill="#b2f2bb" stroke="#868e96" stroke-width="1"/>
+<text x="506" y="498" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Confirm plan</text>
+<rect x="613" y="480" width="66" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<text x="625" y="498" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Revise</text>
+<rect x="494" y="530" width="70" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<ellipse cx="510" cy="545" rx="4" ry="4" fill="#868e96" stroke="none" stroke-width="1"/>
+<ellipse cx="528" cy="545" rx="4" ry="4" fill="#868e96" stroke="none" stroke-width="1"/>
+<ellipse cx="546" cy="545" rx="4" ry="4" fill="#868e96" stroke="none" stroke-width="1"/>
+<text x="114" y="37" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1 · Capture (typing indicator)</text>
+<text x="564" y="37" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2 · Clarify, then confirm the plan</text>
+</svg>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="438" height="820" viewBox="0 0 438 820" font-family="Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="438" height="820" fill="#ffffff"/>
+<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 z" fill="#1e1e1e"/></marker></defs>
+<rect x="24" y="24" width="390" height="772" rx="8" fill="#ffffff" stroke="#1e1e1e" stroke-width="2"/>
+<text x="44" y="55" font-size="16" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Coordinator</text>
+<rect x="44" y="68" width="56" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="57" y="87" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Idea</text>
+<rect x="108" y="68" width="79" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="121" y="87" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Execute</text>
+<rect x="44" y="106" width="150" height="30" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1"/>
+<rect x="119" y="106" width="75" height="30" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="67" y="124" font-size="13" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">List</text>
+<text x="127" y="124" font-size="13" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Calendar</text>
+<text x="44" y="159" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Fits in:</text>
+<rect x="108" y="142" width="41" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="121" y="161" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15</text>
+<rect x="155" y="142" width="41" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="168" y="161" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30</text>
+<rect x="202" y="142" width="41" height="30" rx="8" fill="#96f2d7" stroke="#1e1e1e" stroke-width="1"/>
+<text x="215" y="161" font-size="14" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45</text>
+<rect x="249" y="142" width="49" height="30" rx="8" fill="none" stroke="#868e96" stroke-width="1"/>
+<text x="262" y="161" font-size="14" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">60+</text>
+<text x="40" y="197" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">9 AM</text>
+<polyline points="90,194 390,194" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="40" y="269" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">10</text>
+<polyline points="90,266 390,266" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="40" y="341" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">11</text>
+<polyline points="90,338 390,338" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="40" y="413" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">12 PM</text>
+<polyline points="90,410 390,410" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="40" y="485" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">1 PM</text>
+<polyline points="90,482 390,482" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="40" y="557" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">2</text>
+<polyline points="90,554 390,554" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<text x="40" y="629" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">3</text>
+<polyline points="90,626 390,626" fill="none" stroke="#e9ecef" stroke-width="1"/>
+<rect x="94" y="194" width="292" height="36" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="1"/>
+<text x="104" y="209" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Gather tax documents</text>
+<text x="338" y="208" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">30m</text>
+<rect x="94" y="266" width="292" height="18" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="1"/>
+<text x="104" y="281" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Pick a tax tool</text>
+<text x="338" y="280" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15m</text>
+<rect x="94" y="338" width="292" height="18" rx="8" fill="#e9ecef" stroke="#1e1e1e" stroke-width="1"/>
+<text x="104" y="353" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Book dentist</text>
+<text x="338" y="352" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">15m</text>
+<rect x="94" y="482" width="292" height="54" rx="8" fill="#a5d8ff" stroke="#1e1e1e" stroke-width="1"/>
+<text x="104" y="497" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Enter income details</text>
+<text x="338" y="496" font-size="11" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">45m</text>
+<polyline points="90,374 390,374" fill="none" stroke="#fa5252" stroke-width="1"/>
+<rect x="99" y="365" width="26" height="18" rx="0" fill="#ffffff" stroke="none" stroke-width="1"/>
+<text x="104" y="376" font-size="10" fill="#fa5252" text-anchor="start" font-family="Helvetica, Arial, sans-serif">now</text>
+<rect x="44" y="718" width="350" height="56" rx="8" fill="#f8f9fa" stroke="#868e96" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="58" y="739" font-size="12" fill="#868e96" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Unscheduled (2) — drag onto your day</text>
+<rect x="58" y="748" width="143" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="67" y="761" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Review return · 20m</text>
+<rect x="244" y="748" width="143" height="20" rx="8" fill="#e9ecef" stroke="none" stroke-width="1"/>
+<text x="253" y="761" font-size="12" fill="#1e1e1e" text-anchor="start" font-family="Helvetica, Arial, sans-serif">Submit return · 15m</text>
+</svg>
