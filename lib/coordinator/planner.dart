@@ -313,10 +313,39 @@ class Coordinator {
 
   static Map<String, dynamic>? _tryDecode(String raw) {
     try {
+      // First try direct parse
       final decoded = jsonDecode(raw);
       return decoded is Map<String, dynamic> ? decoded : null;
     } on FormatException {
-      return null;
+      // Fallback: try to extract JSON from response
+      final trimmed = raw.trim();
+      final startIdx = trimmed.indexOf('{');
+      if (startIdx == -1) return null;
+      
+      // Find matching closing brace
+      var braceCount = 0;
+      int endIdx = -1;
+      for (var i = startIdx; i < trimmed.length; i++) {
+        if (trimmed[i] == '{') {
+          braceCount++;
+        } else if (trimmed[i] == '}') {
+          braceCount--;
+          if (braceCount == 0) {
+            endIdx = i;
+            break;
+          }
+        }
+      }
+      
+      if (endIdx == -1) return null;
+      
+      final jsonStr = trimmed.substring(startIdx, endIdx + 1);
+      try {
+        final decoded = jsonDecode(jsonStr);
+        return decoded is Map<String, dynamic> ? decoded : null;
+      } on FormatException {
+        return null;
+      }
     }
   }
 }

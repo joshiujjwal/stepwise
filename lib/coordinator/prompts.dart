@@ -18,7 +18,8 @@ Behaviour:
      checkbox (default), note, url, file. Prefer checkbox unless real proof is natural.
    - has order_index = a SUGGESTED order (1..N, each used once). Order is advisory.
 3. Choose the best idea_type: tax, trip, errand, admin, project, other.
-4. Output STRICT JSON only, matching the schema. No markdown, no commentary, nothing outside the JSON.
+4. **Output ONLY valid JSON. No markdown, no code blocks, no commentary, nothing before or after the JSON object.**
+   Start immediately with "{" and end with "}". Do not wrap in backticks or explain. Just the JSON.
 ''';
 
 const String reTaskingSystemPrompt = '''

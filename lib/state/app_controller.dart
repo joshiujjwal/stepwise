@@ -131,6 +131,11 @@ class AppController extends ChangeNotifier {
         phase: PlanningPhase.error,
         error: e.errors.join('; '),
       );
+    } catch (e) {
+      _session = _session!.copyWith(
+        phase: PlanningPhase.error,
+        error: e.toString(),
+      );
     }
     notifyListeners();
   }

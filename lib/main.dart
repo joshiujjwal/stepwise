@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gemma/flutter_gemma.dart';
 
 import 'coordinator/fake_llm_client.dart';
 import 'coordinator/model_service.dart';
@@ -15,6 +16,12 @@ import 'ui/settings_screen.dart';
 import 'ui/trends_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FlutterGemma.initialize(
+    huggingFaceToken: _huggingFaceTokenDefine(),
+    maxDownloadRetries: _maxDownloadRetriesDefine(),
+  );
+
   // The app starts in offline demo mode so it is fully usable with no model
   // download. On-device Gemma can be enabled from Settings once a model URL is
   // configured below (see _gemmaService).
@@ -27,16 +34,89 @@ Future<void> main() async {
   runApp(StepwiseApp(controller: controller, engine: engine));
 }
 
-/// Configure on-device Gemma by returning a GemmaModelService with your model
-/// URL (e.g. a Gemma IT .task on Hugging Face). Returns null -> Settings shows
-/// demo-only. Kept out of source control by default so no token ships in git.
+/// Configure on-device Gemma from compile-time defines so URLs/tokens/paths are
+/// never committed in source control.
 ///
-/// Example:
-///   return GemmaModelService(
-///     modelUrl: 'https://huggingface.co/litert-community/Gemma3-1B-IT/resolve/main/gemma3-1b-it.task',
-///     huggingFaceToken: const String.fromEnvironment('HF_TOKEN'),
-///   );
-ModelService? _gemmaService() => null;
+/// One source is required:
+///   --dart-define=GEMMA_MODEL_URL=https://.../gemma3-1b-it.task
+///   --dart-define=GEMMA_MODEL_FILE=/absolute/path/to/model.task
+///   --dart-define=GEMMA_MODEL_ASSET=assets/models/model.task
+///
+/// Optional:
+///   --dart-define=HF_TOKEN=hf_...
+///   --dart-define=GEMMA_MODEL_TYPE=gemmaIt|gemma4|deepSeek|qwen|qwen3|functionGemma|phi|general
+///   --dart-define=GEMMA_MAX_TOKENS=2048
+///   --dart-define=GEMMA_MAX_DOWNLOAD_RETRIES=2
+ModelService? _gemmaService() {
+  const modelFile = String.fromEnvironment('GEMMA_MODEL_FILE');
+  const modelAsset = String.fromEnvironment('GEMMA_MODEL_ASSET');
+  const modelUrl = String.fromEnvironment('GEMMA_MODEL_URL');
+  if (modelFile.isEmpty && modelAsset.isEmpty && modelUrl.isEmpty) return null;
+
+  final source = modelFile.isNotEmpty
+      ? const GemmaModelSource.file(modelFile)
+      : modelAsset.isNotEmpty
+          ? const GemmaModelSource.asset(modelAsset)
+          : GemmaModelSource.network(
+              modelUrl,
+              token: _huggingFaceTokenDefine(),
+            );
+
+  final modelType =
+      _modelTypeFromName(_optionalDefine('GEMMA_MODEL_TYPE')) ??
+      _inferModelTypeFromSource(source.location) ??
+      ModelType.gemmaIt;
+  final maxTokens = int.tryParse(_optionalDefine('GEMMA_MAX_TOKENS') ?? '') ?? 2048;
+
+  return GemmaModelService(
+    source: source,
+    modelType: modelType,
+    maxTokens: maxTokens,
+  );
+}
+
+String? _huggingFaceTokenDefine() =>
+    _optionalDefine('HF_TOKEN') ?? _optionalDefine('HUGGINGFACE_TOKEN');
+
+int _maxDownloadRetriesDefine() {
+  final configured =
+      int.tryParse(_optionalDefine('GEMMA_MAX_DOWNLOAD_RETRIES') ?? '');
+  if (configured == null || configured < 1) return 2;
+  return configured;
+}
+
+String? _optionalDefine(String key) {
+  final value = String.fromEnvironment(key);
+  return value.isEmpty ? null : value;
+}
+
+ModelType? _modelTypeFromName(String? raw) {
+  if (raw == null) return null;
+  final normalized = raw.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '').toLowerCase();
+  return switch (normalized) {
+    'modeltypegemmait' || 'gemmait' => ModelType.gemmaIt,
+    'modeltypegemma4' || 'gemma4' => ModelType.gemma4,
+    'modeltypedeepseek' || 'deepseek' => ModelType.deepSeek,
+    'modeltypeqwen' || 'qwen' => ModelType.qwen,
+    'modeltypeqwen3' || 'qwen3' => ModelType.qwen3,
+    'modeltypefunctiongemma' || 'functiongemma' => ModelType.functionGemma,
+    'modeltypephi' || 'phi' => ModelType.phi,
+    'modeltypegeneral' || 'general' => ModelType.general,
+    _ => null,
+  };
+}
+
+ModelType? _inferModelTypeFromSource(String sourceLocation) {
+  final s = sourceLocation.toLowerCase();
+  if (s.contains('gemma-4') || s.contains('gemma4')) return ModelType.gemma4;
+  if (s.contains('qwen3')) return ModelType.qwen3;
+  if (s.contains('qwen')) return ModelType.qwen;
+  if (s.contains('deepseek')) return ModelType.deepSeek;
+  if (s.contains('functiongemma')) return ModelType.functionGemma;
+  if (s.contains('phi')) return ModelType.phi;
+  if (s.contains('gemma')) return ModelType.gemmaIt;
+  return null;
+}
 
 Future<void> _seedDemo(AppController controller) async {
   await controller.submitGoal('Plan a weekend trip');

@@ -162,21 +162,41 @@ class _IdeaScreenState extends State<IdeaScreen> {
   }
 
   Widget _error(AppController controller, PlanningSession session) {
+    final message = _friendlyError(session.error);
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 40),
-          const SizedBox(height: 8),
-          Text("I couldn't plan that cleanly.\n${session.error ?? ''}",
-              textAlign: TextAlign.center),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: controller.discardPlan,
-            child: const Text('Try again'),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 40),
+              const SizedBox(height: 8),
+              Text(
+                "I couldn't plan that cleanly.\n$message",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: controller.discardPlan,
+                child: const Text('Try again'),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  String _friendlyError(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return 'Please try again.';
+    final lower = raw.toLowerCase();
+    if (lower.contains('failedtopredictsync') ||
+        lower.contains('xnnpack delegate failed to reshape') ||
+        lower.contains('allocatetensors()')) {
+      return 'The selected model could not run on this device/runtime. '
+          'Try a smaller model like Gemma 3 1B (.task) or switch to Demo mode.';
+    }
+    return raw;
   }
 }

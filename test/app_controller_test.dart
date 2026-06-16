@@ -13,6 +13,13 @@ AppController _controller(
   );
 }
 
+class _ThrowingLlmClient implements LlmClient {
+  @override
+  Future<String> complete({required String system, required String user}) async {
+    throw Exception('inference failed');
+  }
+}
+
 void main() {
   test('submitGoal -> proposed plan, confirm creates idea + tasks + events',
       () async {
@@ -109,5 +116,15 @@ void main() {
     final m15 = c.availableTasks(bucket: DurationBucket.m15);
     expect(m15, isNotEmpty);
     expect(m15.every((t) => t.durationBucket == DurationBucket.m15), isTrue);
+  });
+
+  test('submitGoal surfaces non-coordinator planner errors as session error',
+      () async {
+    final c = AppController(coordinator: Coordinator(_ThrowingLlmClient()));
+    await c.submitGoal('organize files');
+
+    expect(c.session, isNotNull);
+    expect(c.session!.phase, PlanningPhase.error);
+    expect(c.session!.error, contains('inference failed'));
   });
 }

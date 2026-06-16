@@ -44,9 +44,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: EdgeInsets.all(16),
                 child: Text(
                   'On-device Gemma is not configured for this build. Stepwise is '
-                  'running its offline demo planner. To enable Gemma, supply a '
-                  'model URL when constructing GemmaModelService (see '
-                  'lib/main.dart).',
+                  'running its offline demo planner. To enable Gemma, run with '
+                  '--dart-define=GEMMA_MODEL_URL=... or GEMMA_MODEL_FILE=... '
+                  '(see lib/main.dart).',
                   style: TextStyle(color: Colors.grey),
                 ),
               ),

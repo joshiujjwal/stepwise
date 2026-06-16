@@ -34,22 +34,39 @@ abstract interface class ModelService {
   Future<LlmClient> activate();
 }
 
+enum GemmaModelSourceKind { network, asset, file }
+
+class GemmaModelSource {
+  const GemmaModelSource.network(this.location, {this.token})
+      : kind = GemmaModelSourceKind.network;
+
+  const GemmaModelSource.asset(this.location)
+      : kind = GemmaModelSourceKind.asset,
+        token = null;
+
+  const GemmaModelSource.file(this.location)
+      : kind = GemmaModelSourceKind.file,
+        token = null;
+
+  final GemmaModelSourceKind kind;
+  final String location;
+  final String? token;
+}
+
 /// Real [ModelService] backed by flutter_gemma. Defaults to a Gemma IT model
-/// suitable for on-device JSON planning. The URL/token are provided by the
-/// caller (Settings) so no credentials are hard-coded.
+/// suitable for on-device JSON planning. Source is provided by the caller so
+/// credentials and paths are never hard-coded.
 class GemmaModelService implements ModelService {
   GemmaModelService({
-    required this.modelUrl,
+    required this.source,
     this.modelType = ModelType.gemmaIt,
     this.maxTokens = 2048,
-    this.huggingFaceToken,
     String? id,
-  }) : modelId = id ?? Uri.parse(modelUrl).pathSegments.last;
+  }) : modelId = id ?? _modelIdFromSource(source.location);
 
-  final String modelUrl;
+  final GemmaModelSource source;
   final ModelType modelType;
   final int maxTokens;
-  final String? huggingFaceToken;
 
   @override
   final String modelId;
@@ -60,23 +77,65 @@ class GemmaModelService implements ModelService {
   @override
   Stream<double> download() {
     final controller = StreamController<double>();
-    FlutterGemma.installModel(modelType: modelType)
-        .fromNetwork(modelUrl, token: huggingFaceToken)
-        .withProgress((percent) {
-          if (!controller.isClosed) controller.add((percent / 100).clamp(0, 1));
-        })
-        .install()
-        .then((_) {
-          if (!controller.isClosed) controller.add(1);
-        })
-        .catchError((Object e) {
-          if (!controller.isClosed) controller.addError(e);
-        })
-        .whenComplete(controller.close);
+    try {
+      final installRequest = switch (source.kind) {
+        GemmaModelSourceKind.network =>
+          FlutterGemma.installModel(modelType: modelType)
+              .fromNetwork(source.location, token: source.token),
+        GemmaModelSourceKind.asset => FlutterGemma.installModel(
+            modelType: modelType,
+          ).fromAsset(source.location),
+        GemmaModelSourceKind.file => FlutterGemma.installModel(
+            modelType: modelType,
+          ).fromFile(source.location),
+      };
+      installRequest
+          .withProgress((percent) {
+            if (!controller.isClosed) {
+              controller.add((percent / 100).clamp(0, 1));
+            }
+          })
+          .install()
+          .then((_) {
+            if (!controller.isClosed) controller.add(1);
+          })
+          .catchError((Object e) {
+            if (!controller.isClosed) {
+              controller.addError(_wrapInstallError(e));
+            }
+          })
+          .whenComplete(controller.close);
+    } catch (e) {
+      if (!controller.isClosed) {
+        controller.addError(_wrapInstallError(e));
+      }
+      controller.close();
+    }
     return controller.stream;
   }
 
   @override
   Future<LlmClient> activate() =>
       GemmaLlmClient.create(modelType: modelType, maxTokens: maxTokens);
+
+  static String _modelIdFromSource(String sourceLocation) {
+    final uri = Uri.tryParse(sourceLocation);
+    final rawName = (uri != null && uri.pathSegments.isNotEmpty)
+        ? uri.pathSegments.last
+        : sourceLocation.split('/').last;
+    return rawName
+        .replaceFirst(RegExp(r'\.litertlm$', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'\.task$', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'\.bin$', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'\.tflite$', caseSensitive: false), '');
+  }
+
+  Object _wrapInstallError(Object error) {
+    if (source.kind == GemmaModelSourceKind.asset) {
+      return 'Asset install failed for "${source.location}". '
+          'Ensure the file exists and is declared under "flutter/assets" in pubspec.yaml. '
+          'Original error: $error';
+    }
+    return error;
+  }
 }
