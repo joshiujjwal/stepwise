@@ -47,7 +47,7 @@ class _IdeaScreenState extends State<IdeaScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Describe a goal in your own words.',
+          'Write one TODO item.',
           style: TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 12),
@@ -57,21 +57,20 @@ class _IdeaScreenState extends State<IdeaScreen> {
           maxLines: 6,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            hintText: 'e.g. File my 2025 taxes for the first time',
+            hintText: 'e.g. File my 2025 taxes',
           ),
         ),
         const SizedBox(height: 12),
         FilledButton(
           onPressed: () {
             final text = _goal.text.trim();
-            if (text.isNotEmpty) controller.submitGoal(text);
+            if (text.isNotEmpty) controller.submitTodoItem(text);
           },
-          child: const Text('Start planning'),
+          child: const Text('Chunk TODO'),
         ),
         const SizedBox(height: 8),
         const Text(
-          "I'll ask 1-2 quick questions if needed, then propose a step-by-step "
-          'plan you can confirm.',
+          'The agent will enhance it and split it into time-doable chunks you can confirm.',
           style: TextStyle(color: Colors.grey),
         ),
       ],

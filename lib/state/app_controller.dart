@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../coordinator/planner.dart';
+import '../coordinator/todo_chunking_agent.dart';
 import '../models/models.dart';
 import 'event_store.dart';
 import 'projections.dart';
@@ -54,6 +55,7 @@ class PlanningSession {
 class AppController extends ChangeNotifier {
   AppController({
     required this.coordinator,
+    this.todoChunkingAgent,
     EventStore? store,
     String Function()? idGen,
     DateTime Function()? clock,
@@ -62,6 +64,7 @@ class AppController extends ChangeNotifier {
         _clock = clock;
 
   final Coordinator coordinator;
+  final TodoChunkingAgent? todoChunkingAgent;
   final EventStore store;
   final String Function()? _idGen;
   final DateTime Function()? _clock;
@@ -107,6 +110,38 @@ class AppController extends ChangeNotifier {
     _session = PlanningSession(goal: goal);
     notifyListeners();
     await _runPlanner(goal, 'none');
+  }
+
+  /// TODO-first flow: the user writes one TODO item and the dedicated agent
+  /// enhances/splits it into time-boxed executable chunks.
+  Future<void> submitTodoItem(String todoItem) async {
+    _session = PlanningSession(goal: todoItem);
+    notifyListeners();
+
+    final agent = todoChunkingAgent;
+    if (agent == null) {
+      await _runPlanner(todoItem, 'none');
+      return;
+    }
+
+    try {
+      final proposal = await agent.chunkTodo(todoItem);
+      _session = _session!.copyWith(
+        phase: PlanningPhase.proposed,
+        proposal: proposal,
+      );
+    } on CoordinatorException catch (e) {
+      _session = _session!.copyWith(
+        phase: PlanningPhase.error,
+        error: e.errors.join('; '),
+      );
+    } catch (e) {
+      _session = _session!.copyWith(
+        phase: PlanningPhase.error,
+        error: e.toString(),
+      );
+    }
+    notifyListeners();
   }
 
   Future<void> submitAnswers(String answers) async {

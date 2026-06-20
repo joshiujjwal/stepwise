@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stepwise/coordinator/fake_llm_client.dart';
 import 'package:stepwise/coordinator/planner.dart';
+import 'package:stepwise/coordinator/todo_chunking_agent.dart';
 import 'package:stepwise/models/models.dart';
 import 'package:stepwise/state/app_controller.dart';
 import 'package:stepwise/state/event_store.dart';
@@ -15,7 +16,8 @@ AppController _controller(
 
 class _ThrowingLlmClient implements LlmClient {
   @override
-  Future<String> complete({required String system, required String user}) async {
+  Future<String> complete(
+      {required String system, required String user}) async {
     throw Exception('inference failed');
   }
 }
@@ -126,5 +128,49 @@ void main() {
     expect(c.session, isNotNull);
     expect(c.session!.phase, PlanningPhase.error);
     expect(c.session!.error, contains('inference failed'));
+  });
+
+  test('submitTodoItem uses TODO chunking agent flow', () async {
+    const plan = '''
+{
+  "action": "propose_plan",
+  "idea_type": "other",
+  "summary": "Chunked TODO",
+  "micro_tasks": [
+    {
+      "title": "Gather docs",
+      "description": "Collect the documents in one folder.",
+      "est_minutes": 15,
+      "order_index": 1,
+      "acceptance_criteria": [{"text": "Docs are gathered", "evidence_type": "checkbox"}]
+    },
+    {
+      "title": "Draft submission",
+      "description": "Prepare a first draft submission.",
+      "est_minutes": 20,
+      "order_index": 2,
+      "acceptance_criteria": [{"text": "Draft is complete", "evidence_type": "checkbox"}]
+    },
+    {
+      "title": "Submit and save confirmation",
+      "description": "Submit and store confirmation details.",
+      "est_minutes": 15,
+      "order_index": 3,
+      "acceptance_criteria": [{"text": "Confirmation saved", "evidence_type": "checkbox"}]
+    }
+  ]
+}
+''';
+    final llm = FakeLlmClient(scripted: [plan]);
+    final coordinator = Coordinator(llm);
+    final c = AppController(
+      coordinator: coordinator,
+      todoChunkingAgent: TodoChunkingAgent(coordinator: coordinator),
+    );
+
+    await c.submitTodoItem('file taxes');
+
+    expect(c.session!.phase, PlanningPhase.proposed);
+    expect(c.session!.proposal!.tasks.length, 3);
   });
 }

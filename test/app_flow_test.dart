@@ -28,9 +28,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // --- Idea tab: type a goal and start planning ---
-    expect(find.text('Start planning'), findsOneWidget);
+    expect(find.text('Chunk TODO'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'Organize the garage');
-    await tester.tap(find.text('Start planning'));
+    await tester.tap(find.text('Chunk TODO'));
     await tester.pumpAndSettle();
 
     // The coordinator proposed a plan; confirm it.

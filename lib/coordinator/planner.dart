@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'prompts.dart';
 
 // PlannerResponse parsing + validation + the repair loop.
@@ -18,6 +20,7 @@ const Set<String> kIdeaTypes = {
   'project',
   'other',
 };
+const int kRepairPreviousResponseMaxChars = 2000;
 
 /// Parsed planner output: either a clarifying turn or a proposed plan.
 sealed class PlannerResponse {
@@ -282,24 +285,32 @@ class Coordinator {
     String typeGuess = 'unknown',
     String priorAnswers = 'none',
     PlanContext context = PlanContext.plan,
+    String? systemPromptOverride,
   }) async {
     final user =
         'Goal: $goal\nType (guess, may be wrong): $typeGuess\nAnswers to prior questions: $priorAnswers';
-    final system = context == PlanContext.retask
-        ? reTaskingSystemPrompt
-        : planningSystemPrompt;
+    final system = systemPromptOverride ??
+        (context == PlanContext.retask
+            ? reTaskingSystemPrompt
+            : planningSystemPrompt);
 
     var raw = await llm.complete(system: system, user: user);
-    var obj = _tryDecode(raw);
+    debugPrint(
+        '[Coordinator] Raw response (first 500 chars): ${raw.substring(0, (raw.length > 500 ? 500 : raw.length))}');
+    var obj = _normalizePlannerObject(_tryDecode(raw));
     var errors = obj == null
         ? ['response was not valid JSON']
         : validatePlannerJson(obj, context: context);
 
     if (errors.isNotEmpty) {
+      debugPrint('[Coordinator] Validation errors: $errors');
+      final repairPrevious = _truncateForRepair(raw);
       final repairUser =
-          'Previous response: $raw\nValidation errors:\n- ${errors.join('\n- ')}';
+          'Previous response: $repairPrevious\nValidation errors:\n- ${errors.join('\n- ')}';
       raw = await llm.complete(system: repairSystemPrompt, user: repairUser);
-      obj = _tryDecode(raw);
+      debugPrint(
+          '[Coordinator] Repair response (first 500 chars): ${raw.substring(0, (raw.length > 500 ? 500 : raw.length))}');
+      obj = _normalizePlannerObject(_tryDecode(raw));
       errors = obj == null
           ? ['response was not valid JSON']
           : validatePlannerJson(obj, context: context);
@@ -311,42 +322,261 @@ class Coordinator {
     return parsePlannerResponse(obj);
   }
 
-  static Map<String, dynamic>? _tryDecode(String raw) {
-    try {
-      // First try direct parse
-      final decoded = jsonDecode(raw);
-      return decoded is Map<String, dynamic> ? decoded : null;
-    } on FormatException {
-      // Fallback: try to extract JSON from response
-      final trimmed = raw.trim();
-      final startIdx = trimmed.indexOf('{');
-      if (startIdx == -1) return null;
-      
-      // Find matching closing brace
-      var braceCount = 0;
-      int endIdx = -1;
-      for (var i = startIdx; i < trimmed.length; i++) {
-        if (trimmed[i] == '{') {
-          braceCount++;
-        } else if (trimmed[i] == '}') {
-          braceCount--;
-          if (braceCount == 0) {
-            endIdx = i;
-            break;
-          }
-        }
+  static String _truncateForRepair(String value) {
+    if (value.length <= kRepairPreviousResponseMaxChars) return value;
+    return '${value.substring(0, kRepairPreviousResponseMaxChars)}\n...[truncated]';
+  }
+
+  static Map<String, dynamic>? _normalizePlannerObject(
+    Map<String, dynamic>? obj,
+  ) {
+    if (obj == null) return null;
+    final action = obj['action'];
+    if (action == 'ask_clarifying' || action == 'propose_plan') return obj;
+
+    final legacyPlan = obj['plan'];
+    if (legacyPlan is! List) return obj;
+
+    final tasks = <Map<String, dynamic>>[];
+    for (var i = 0; i < legacyPlan.length; i++) {
+      final item = legacyPlan[i];
+      if (item is! Map) continue;
+
+      final title = _asString(item['title']) ??
+          _asString(item['action']) ??
+          'Complete task ${i + 1}';
+      final description =
+          _asString(item['description']) ?? 'Complete this task step.';
+      final order = _asInt(item['order_index']) ?? (i + 1);
+      final estMinutes = _normalizeEstMinutes(item['est_minutes']);
+      final criteria = _normalizeCriteria(item['acceptance_criteria'], title);
+
+      tasks.add({
+        'title': title,
+        'description': description,
+        'est_minutes': estMinutes,
+        'order_index': order,
+        'acceptance_criteria': criteria,
+      });
+    }
+
+    if (tasks.isEmpty) return obj;
+    final summary = _asString(obj['summary']);
+    return {
+      'action': 'propose_plan',
+      'idea_type': _normalizeIdeaType(obj['idea_type'] ?? obj['type']),
+      if (summary != null) 'summary': summary,
+      'micro_tasks': tasks,
+    };
+  }
+
+  static String? _asString(Object? value) {
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  static int? _asInt(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.round();
+    if (value is String) return int.tryParse(value.trim());
+    return null;
+  }
+
+  static String _normalizeIdeaType(Object? raw) {
+    final value = _asString(raw)?.toLowerCase();
+    if (value == null) return 'other';
+    if (kIdeaTypes.contains(value)) return value;
+    if (value.contains('tax')) return 'tax';
+    if (value.contains('trip') || value.contains('travel')) return 'trip';
+    if (value.contains('errand')) return 'errand';
+    if (value.contains('admin')) return 'admin';
+    if (value.contains('project')) return 'project';
+    return 'other';
+  }
+
+  static int _normalizeEstMinutes(Object? raw) {
+    final parsed = _asInt(raw) ?? 15;
+    final rounded = ((parsed / 5).round() * 5).clamp(5, 60);
+    return rounded;
+  }
+
+  static List<Map<String, String>> _normalizeCriteria(
+    Object? raw,
+    String fallbackTitle,
+  ) {
+    if (raw is! List || raw.isEmpty) {
+      return [
+        {'text': '$fallbackTitle completed', 'evidence_type': 'checkbox'}
+      ];
+    }
+
+    final criteria = <Map<String, String>>[];
+    for (final item in raw) {
+      if (criteria.length >= 4) break;
+      if (item is String) {
+        final text = item
+            .replaceFirst(
+                RegExp(r'^\s*checkbox\s*:\s*', caseSensitive: false), '')
+            .trim();
+        if (text.isEmpty) continue;
+        criteria.add({'text': text, 'evidence_type': 'checkbox'});
+        continue;
       }
-      
-      if (endIdx == -1) return null;
-      
-      final jsonStr = trimmed.substring(startIdx, endIdx + 1);
-      try {
-        final decoded = jsonDecode(jsonStr);
-        return decoded is Map<String, dynamic> ? decoded : null;
-      } on FormatException {
-        return null;
+      if (item is Map) {
+        final text = _asString(item['text']) ??
+            _asString(item['criterion']) ??
+            _asString(item['description']);
+        if (text == null) continue;
+        final evidence = _asString(item['evidence_type'])?.toLowerCase();
+        criteria.add({
+          'text': text,
+          'evidence_type':
+              kEvidenceTypes.contains(evidence) ? evidence! : 'checkbox',
+        });
       }
     }
+
+    if (criteria.isNotEmpty) return criteria;
+    return [
+      {'text': '$fallbackTitle completed', 'evidence_type': 'checkbox'}
+    ];
+  }
+
+  static Map<String, dynamic>? _tryDecode(String raw) {
+    final candidates = <String>[raw, _normalizeJsonCandidate(raw)];
+
+    for (final source in candidates) {
+      final direct = _decodeToMap(source);
+      if (direct != null) return direct;
+
+      final extracted = _extractJsonObjectCandidates(source);
+      for (final candidate in extracted) {
+        final parsed = _decodeToMap(candidate) ??
+            _decodeToMap(_normalizeJsonCandidate(candidate));
+        if (parsed != null) return parsed;
+      }
+    }
+    debugPrint('[_tryDecode] No valid JSON object decoded');
+    return null;
+  }
+
+  static Map<String, dynamic>? _decodeToMap(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(trimmed);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) {
+        return Map<String, dynamic>.from(decoded);
+      }
+      if (decoded is String && decoded != trimmed) {
+        return _decodeToMap(decoded);
+      }
+      return null;
+    } on FormatException {
+      return null;
+    }
+  }
+
+  static String _normalizeJsonCandidate(String raw) {
+    var normalized = raw.trim();
+    normalized = _stripCodeFence(normalized);
+    normalized = normalized
+        .replaceAll('“', '"')
+        .replaceAll('”', '"')
+        .replaceAll('‘', "'")
+        .replaceAll('’', "'");
+    normalized = _removeTrailingCommas(normalized);
+    return normalized;
+  }
+
+  static String _stripCodeFence(String raw) {
+    if (!raw.startsWith('```') || !raw.endsWith('```')) return raw;
+    final firstLineEnd = raw.indexOf('\n');
+    if (firstLineEnd == -1 || firstLineEnd >= raw.length - 3) return raw;
+    return raw.substring(firstLineEnd + 1, raw.length - 3).trim();
+  }
+
+  static String _removeTrailingCommas(String raw) {
+    final out = StringBuffer();
+    var inString = false;
+    var escaping = false;
+
+    for (var i = 0; i < raw.length; i++) {
+      final ch = raw[i];
+      if (inString) {
+        out.write(ch);
+        if (escaping) {
+          escaping = false;
+        } else if (ch == r'\') {
+          escaping = true;
+        } else if (ch == '"') {
+          inString = false;
+        }
+        continue;
+      }
+      if (ch == '"') {
+        inString = true;
+        out.write(ch);
+        continue;
+      }
+      if (ch == ',') {
+        final next = _nextNonWhitespace(raw, i + 1);
+        if (next == '}' || next == ']') continue;
+      }
+      out.write(ch);
+    }
+    return out.toString();
+  }
+
+  static String? _nextNonWhitespace(String raw, int start) {
+    for (var i = start; i < raw.length; i++) {
+      final ch = raw[i];
+      if (ch.trim().isNotEmpty) return ch;
+    }
+    return null;
+  }
+
+  static List<String> _extractJsonObjectCandidates(String raw) {
+    final candidates = <String>[];
+    var depth = 0;
+    var inString = false;
+    var escaping = false;
+    var start = -1;
+
+    for (var i = 0; i < raw.length; i++) {
+      final ch = raw[i];
+      if (inString) {
+        if (escaping) {
+          escaping = false;
+        } else if (ch == r'\') {
+          escaping = true;
+        } else if (ch == '"') {
+          inString = false;
+        }
+        continue;
+      }
+
+      if (ch == '"') {
+        inString = true;
+        continue;
+      }
+      if (ch == '{') {
+        if (depth == 0) start = i;
+        depth++;
+        continue;
+      }
+      if (ch == '}') {
+        if (depth == 0) continue;
+        depth--;
+        if (depth == 0 && start >= 0) {
+          candidates.add(raw.substring(start, i + 1));
+          start = -1;
+        }
+      }
+    }
+    return candidates;
   }
 }
 

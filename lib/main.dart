@@ -4,7 +4,9 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 import 'coordinator/fake_llm_client.dart';
 import 'coordinator/model_service.dart';
 import 'coordinator/planner.dart';
+import 'coordinator/prompts.dart';
 import 'coordinator/swappable_llm_client.dart';
+import 'coordinator/todo_chunking_agent.dart';
 import 'state/app_controller.dart';
 import 'state/app_scope.dart';
 import 'state/engine_controller.dart';
@@ -26,7 +28,15 @@ Future<void> main() async {
   // download. On-device Gemma can be enabled from Settings once a model URL is
   // configured below (see _gemmaService).
   final llm = SwappableLlmClient(FakeLlmClient());
-  final controller = AppController(coordinator: Coordinator(llm));
+  final coordinator = Coordinator(llm);
+  final controller = AppController(
+    coordinator: coordinator,
+    todoChunkingAgent: TodoChunkingAgent(
+      coordinator: coordinator,
+      systemPrompt: _optionalDefine('TODO_CHUNKING_SYSTEM_PROMPT') ??
+          todoChunkingSystemPrompt,
+    ),
+  );
   final engine =
       EngineController(swappable: llm, modelService: _gemmaService());
 
@@ -47,6 +57,7 @@ Future<void> main() async {
 ///   --dart-define=GEMMA_MODEL_TYPE=gemmaIt|gemma4|deepSeek|qwen|qwen3|functionGemma|phi|general
 ///   --dart-define=GEMMA_MAX_TOKENS=2048
 ///   --dart-define=GEMMA_MAX_DOWNLOAD_RETRIES=2
+///   --dart-define=TODO_CHUNKING_SYSTEM_PROMPT=...
 ModelService? _gemmaService() {
   const modelFile = String.fromEnvironment('GEMMA_MODEL_FILE');
   const modelAsset = String.fromEnvironment('GEMMA_MODEL_ASSET');
@@ -62,11 +73,11 @@ ModelService? _gemmaService() {
               token: _huggingFaceTokenDefine(),
             );
 
-  final modelType =
-      _modelTypeFromName(_optionalDefine('GEMMA_MODEL_TYPE')) ??
+  final modelType = _modelTypeFromName(_optionalDefine('GEMMA_MODEL_TYPE')) ??
       _inferModelTypeFromSource(source.location) ??
       ModelType.gemmaIt;
-  final maxTokens = int.tryParse(_optionalDefine('GEMMA_MAX_TOKENS') ?? '') ?? 2048;
+  final maxTokens =
+      int.tryParse(_optionalDefine('GEMMA_MAX_TOKENS') ?? '') ?? 2048;
 
   return GemmaModelService(
     source: source,

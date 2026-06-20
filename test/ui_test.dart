@@ -22,7 +22,7 @@ void main() {
     await tester.pumpWidget(_app(c, const IdeaScreen()));
 
     await tester.enterText(find.byType(TextField), 'file my 2025 taxes');
-    await tester.tap(find.text('Start planning'));
+    await tester.tap(find.text('Chunk TODO'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Proposed plan'), findsOneWidget);
@@ -30,7 +30,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(c.ideas.length, 1);
-    expect(find.text('Start planning'), findsOneWidget); // back to capture
+    expect(find.text('Chunk TODO'), findsOneWidget); // back to capture
   });
 
   testWidgets('Execute: duration filter narrows the list', (tester) async {
