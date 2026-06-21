@@ -38,9 +38,13 @@ class CalendarDayView extends StatelessWidget {
                     children: [
                       SizedBox(
                         width: 56,
-                        child: Text('$h:00',
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 12)),
+                        child: Text(
+                          '$h:00',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                       const Expanded(child: Divider()),
                     ],
@@ -57,9 +61,11 @@ class CalendarDayView extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 4, bottom: 2),
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: stateColor(t.state),
+                      color: stateColor(context, t.state),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF1E1E1E)),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
                     ),
                     child: Text('${t.title}  (${t.estMinutes}m)',
                         maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -70,8 +76,10 @@ class CalendarDayView extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         if (unscheduled.isNotEmpty) ...[
-          const Text('Unscheduled - tap to drop onto your day',
-              style: TextStyle(color: Colors.grey)),
+          Text(
+            'Unscheduled - tap to drop onto your day',
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,

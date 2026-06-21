@@ -42,4 +42,8 @@ void main() {
   test('blocked can be re-tasked', () {
     expect(canTransition(TaskState.blocked, TaskState.reTasked), isTrue);
   });
+
+  test('blocked can return to in progress', () {
+    expect(canTransition(TaskState.blocked, TaskState.inProgress), isTrue);
+  });
 }

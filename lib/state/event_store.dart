@@ -11,6 +11,7 @@ abstract final class EventTypes {
   static const taskApproved = 'task_approved';
   static const taskRejected = 'task_rejected';
   static const taskBlocked = 'task_blocked';
+  static const taskUnstuck = 'task_unstuck';
   static const taskRetasked = 'task_retasked';
   static const criterionSatisfied = 'criterion_satisfied';
   static const estimateOverridden = 'estimate_overridden';

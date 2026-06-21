@@ -11,13 +11,37 @@ String stateLabel(TaskState s) => switch (s) {
       TaskState.reTasked => 'Re-tasked',
     };
 
-Color stateColor(TaskState s) => switch (s) {
-      TaskState.todo => const Color(0xFFE9ECEF),
-      TaskState.inProgress => const Color(0xFFA5D8FF),
-      TaskState.awaitingApproval => const Color(0xFFFFEC99),
-      TaskState.done => const Color(0xFFB2F2BB),
-      TaskState.blocked => const Color(0xFFFFC9C9),
-      TaskState.reTasked => const Color(0xFFD0BFFF),
+Color stateColor(BuildContext context, TaskState s) {
+  final scheme = Theme.of(context).colorScheme;
+  return switch (s) {
+    TaskState.todo => scheme.surfaceContainerHighest,
+    TaskState.inProgress => scheme.primaryContainer,
+    TaskState.awaitingApproval => scheme.secondaryContainer,
+    TaskState.done => scheme.tertiaryContainer,
+    TaskState.blocked => scheme.errorContainer,
+    TaskState.reTasked => scheme.surfaceContainer,
+  };
+}
+
+Color stateOnColor(BuildContext context, TaskState s) {
+  final scheme = Theme.of(context).colorScheme;
+  return switch (s) {
+    TaskState.todo => scheme.onSurface,
+    TaskState.inProgress => scheme.onPrimaryContainer,
+    TaskState.awaitingApproval => scheme.onSecondaryContainer,
+    TaskState.done => scheme.onTertiaryContainer,
+    TaskState.blocked => scheme.onErrorContainer,
+    TaskState.reTasked => scheme.onSurface,
+  };
+}
+
+IconData stateIcon(TaskState s) => switch (s) {
+      TaskState.todo => Icons.radio_button_unchecked,
+      TaskState.inProgress => Icons.play_circle_outline,
+      TaskState.awaitingApproval => Icons.fact_check_outlined,
+      TaskState.done => Icons.check_circle_outline,
+      TaskState.blocked => Icons.block_outlined,
+      TaskState.reTasked => Icons.call_split,
     };
 
 class StatePill extends StatelessWidget {
@@ -26,15 +50,24 @@ class StatePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bg = stateColor(context, state);
+    final fg = stateOnColor(context, state);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: stateColor(state),
-        borderRadius: BorderRadius.circular(20),
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
-        stateLabel(state),
-        style: const TextStyle(fontSize: 12, color: Color(0xFF1E1E1E)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(stateIcon(state), size: 14, color: fg),
+          const SizedBox(width: 4),
+          Text(
+            stateLabel(state),
+            style: TextStyle(fontSize: 12, color: fg),
+          ),
+        ],
       ),
     );
   }
@@ -46,15 +79,16 @@ class DurationBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFA5D8FF),
-        borderRadius: BorderRadius.circular(20),
+        color: scheme.primaryContainer,
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         '$estMinutes min',
-        style: const TextStyle(fontSize: 12, color: Color(0xFF1E1E1E)),
+        style: TextStyle(fontSize: 12, color: scheme.onPrimaryContainer),
       ),
     );
   }

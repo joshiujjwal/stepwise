@@ -50,17 +50,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Do the main part of the work'), findsNothing);
 
-    // Open a task -> Idea progress screen.
+    // Open a task -> task detail screen.
     await tester.tap(find.text('Write down the outcome you want'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Step 1 of 5'), findsOneWidget);
+    expect(find.byIcon(Icons.calendar_today), findsNothing);
 
     // Start it, run the focus timer, then submit for approval. Scope to the
     // first task card (every todo task renders its own Start button).
     await tester.tap(find.widgetWithText(FilledButton, 'Start').first);
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(OutlinedButton, 'Focus timer'));
-    await tester.pumpAndSettle();
+    await tester.pump();
     await tester.tap(find.widgetWithText(OutlinedButton, 'Stop timer'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Submit for approval'));
@@ -75,10 +75,10 @@ void main() {
     await tester.tap(approve);
     await tester.pumpAndSettle();
 
-    // One task done -> 20% complete.
+    // One task done.
     expect(app.controller.progressForIdea(ideaId).percentComplete, 20);
 
-    // Pop back from the pushed progress route to reach the bottom nav.
+    // Pop back from the pushed detail route to reach the bottom nav.
     await tester.pageBack();
     await tester.pumpAndSettle();
 
@@ -94,8 +94,7 @@ void main() {
     expect(find.textContaining('never'), findsOneWidget);
   });
 
-  testWidgets('calendar view schedules an unscheduled task as a time block',
-      (tester) async {
+  testWidgets('execute list does not expose the calendar view', (tester) async {
     final app = build();
     await app.controller.submitGoal('Plan a trip');
     app.controller.confirmPlan();
@@ -106,28 +105,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Execute'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.calendar_today));
-    await tester.pumpAndSettle();
-
-    // The day timeline rendered (hour gridlines at the top).
-    expect(find.text('9:00'), findsOneWidget);
-
-    // The unscheduled tray sits below the tall timeline in a lazy ListView;
-    // scroll it into view, then schedule the first task.
-    final calendar = find.byType(Scrollable).last;
-    await tester.scrollUntilVisible(
-      find.textContaining('Unscheduled'),
-      300,
-      scrollable: calendar,
-    );
-    await tester.pumpAndSettle();
-    expect(find.textContaining('Unscheduled'), findsOneWidget);
-
-    final chip = find.byType(ActionChip).first;
-    await tester.ensureVisible(chip);
-    await tester.pumpAndSettle();
-    await tester.tap(chip);
-    await tester.pumpAndSettle();
-    expect(find.textContaining('m)'), findsWidgets); // a sized block appeared
+    expect(find.byIcon(Icons.calendar_today), findsNothing);
+    expect(find.textContaining('Unscheduled'), findsNothing);
   });
 }

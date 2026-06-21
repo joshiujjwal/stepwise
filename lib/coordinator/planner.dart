@@ -317,7 +317,14 @@ class Coordinator {
     }
 
     if (obj == null || errors.isNotEmpty) {
-      throw CoordinatorException(errors.isEmpty ? ['unknown error'] : errors);
+      final effectiveErrors = errors.isEmpty ? ['unknown error'] : errors;
+      final envelope = {
+        'action': 'error',
+        'error_type': 'planner_response_invalid',
+        'stage': 'parse_validate_repair',
+        'errors': effectiveErrors,
+      };
+      throw CoordinatorException([jsonEncode(envelope)]);
     }
     return parsePlannerResponse(obj);
   }
@@ -332,7 +339,10 @@ class Coordinator {
   ) {
     if (obj == null) return null;
     final action = obj['action'];
-    if (action == 'ask_clarifying' || action == 'propose_plan') return obj;
+    if (action == 'ask_clarifying') return obj;
+    if (action == 'propose_plan') {
+      return _coerceProposePlanObject(obj);
+    }
 
     final legacyPlan = obj['plan'];
     if (legacyPlan is! List) return obj;
@@ -367,6 +377,56 @@ class Coordinator {
       'idea_type': _normalizeIdeaType(obj['idea_type'] ?? obj['type']),
       if (summary != null) 'summary': summary,
       'micro_tasks': tasks,
+    };
+  }
+
+  static Map<String, dynamic> _coerceProposePlanObject(
+    Map<String, dynamic> obj,
+  ) {
+    final rawTasks = obj['micro_tasks'] is List
+        ? obj['micro_tasks'] as List
+        : obj['plan'] is List
+            ? obj['plan'] as List
+            : const <Object?>[];
+
+    final normalized = <Map<String, dynamic>>[];
+    for (var i = 0; i < rawTasks.length; i++) {
+      final item = rawTasks[i];
+      if (item is! Map) continue;
+
+      normalized.add({
+        'title': _asString(item['title']) ??
+            _asString(item['action']) ??
+            'Complete task ${i + 1}',
+        'description':
+            _asString(item['description']) ?? 'Complete this task step.',
+        'est_minutes': _normalizeEstMinutes(item['est_minutes']),
+        'order_index': _asInt(item['order_index']) ?? (i + 1),
+        'acceptance_criteria': _normalizeCriteria(
+          item['acceptance_criteria'] ?? item['criteria'],
+          _asString(item['title']) ??
+              _asString(item['action']) ??
+              'Task ${i + 1}',
+        ),
+      });
+    }
+
+    normalized.sort((a, b) =>
+        (a['order_index'] as int).compareTo(b['order_index'] as int));
+    final canonicalTasks = <Map<String, dynamic>>[
+      for (var i = 0; i < normalized.length; i++)
+        {
+          ...normalized[i],
+          'order_index': i + 1,
+        }
+    ];
+
+    final summary = _asString(obj['summary']);
+    return {
+      'action': 'propose_plan',
+      'idea_type': _normalizeIdeaType(obj['idea_type'] ?? obj['type']),
+      if (summary != null) 'summary': summary,
+      'micro_tasks': canonicalTasks,
     };
   }
 
@@ -444,7 +504,12 @@ class Coordinator {
   }
 
   static Map<String, dynamic>? _tryDecode(String raw) {
-    final candidates = <String>[raw, _normalizeJsonCandidate(raw)];
+    final candidates = <String>[
+      raw,
+      _normalizeJsonCandidate(raw),
+      ..._extractFencedBlocks(raw),
+      ..._extractFencedBlocks(_normalizeJsonCandidate(raw)),
+    ];
 
     for (final source in candidates) {
       final direct = _decodeToMap(source);
@@ -459,6 +524,16 @@ class Coordinator {
     }
     debugPrint('[_tryDecode] No valid JSON object decoded');
     return null;
+  }
+
+  static List<String> _extractFencedBlocks(String raw) {
+    final blocks = <String>[];
+    final fence = RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```', caseSensitive: false);
+    for (final match in fence.allMatches(raw)) {
+      final block = match.group(1)?.trim();
+      if (block != null && block.isNotEmpty) blocks.add(block);
+    }
+    return blocks;
   }
 
   static Map<String, dynamic>? _decodeToMap(String raw) {

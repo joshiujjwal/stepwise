@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../coordinator/planner.dart';
@@ -76,6 +78,7 @@ class AppController extends ChangeNotifier {
   final List<Idea> _ideas = [];
   final List<MicroTask> _tasks = [];
   final Map<String, DateTime> _timerRunning = {};
+  Timer? _timerTicker;
   PlanningSession? _session;
 
   // ---- read API (for the UI) ----
@@ -102,6 +105,15 @@ class AppController extends ChangeNotifier {
       progressFor(tasksForIdea(ideaId));
 
   bool isTimerRunning(String taskId) => _timerRunning.containsKey(taskId);
+
+  int remainingFocusSeconds(String taskId) {
+    final task = taskById(taskId);
+    final started = _timerRunning[taskId];
+    final elapsed = started == null ? 0 : _now().difference(started).inSeconds;
+    final totalSeconds = task.estMinutes * 60;
+    final remaining = totalSeconds - task.focusSeconds - elapsed;
+    return remaining < 0 ? 0 : remaining;
+  }
 
   MicroTask taskById(String id) => _tasks.firstWhere((t) => t.id == id);
 
@@ -231,6 +243,12 @@ class AppController extends ChangeNotifier {
     return ok;
   }
 
+  bool unstuckTask(String id) {
+    final ok = _transition(id, TaskState.inProgress, EventTypes.taskUnstuck);
+    if (ok) _recomputeIdeaStatus(taskById(id).ideaId);
+    return ok;
+  }
+
   void satisfyCriterion(String taskId, String criterionId,
       {String? evidenceValue}) {
     final i = _indexOf(taskId);
@@ -261,6 +279,7 @@ class AppController extends ChangeNotifier {
   void startTimer(String taskId) {
     if (_timerRunning.containsKey(taskId)) return;
     _timerRunning[taskId] = _now();
+    _ensureTimerTicker();
     _append(taskById(taskId).ideaId, EventTypes.timerStarted,
         microTaskId: taskId);
     notifyListeners();
@@ -278,10 +297,11 @@ class AppController extends ChangeNotifier {
     );
     _append(_tasks[i].ideaId, EventTypes.timerStopped,
         microTaskId: taskId, payload: {'seconds': seconds});
+    if (_timerRunning.isEmpty) _stopTimerTicker();
     notifyListeners();
   }
 
-  // ---- re-tasking (spec §7): blocked or proactive "break this down" ----
+  // ---- re-tasking (spec §7): blocked task decomposition ----
   Future<void> retask(String taskId, {String reason = ''}) async {
     final i = _indexOf(taskId);
     final parent = _tasks[i];
@@ -306,6 +326,21 @@ class AppController extends ChangeNotifier {
   }
 
   // ---- internals ----
+  void _ensureTimerTicker() {
+    _timerTicker ??= Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_timerRunning.isEmpty) {
+        _stopTimerTicker();
+        return;
+      }
+      notifyListeners();
+    });
+  }
+
+  void _stopTimerTicker() {
+    _timerTicker?.cancel();
+    _timerTicker = null;
+  }
+
   int _indexOf(String taskId) {
     final i = _tasks.indexWhere((t) => t.id == taskId);
     if (i == -1) throw StateError('no task $taskId');
@@ -399,4 +434,10 @@ class AppController extends ChangeNotifier {
 
   static EvidenceType _evidenceFrom(String s) => EvidenceType.values
       .firstWhere((e) => e.name == s, orElse: () => EvidenceType.checkbox);
+
+  @override
+  void dispose() {
+    _stopTimerTicker();
+    super.dispose();
+  }
 }

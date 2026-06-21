@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stepwise/coordinator/fake_llm_client.dart';
 import 'package:stepwise/coordinator/planner.dart';
@@ -168,5 +170,132 @@ Thanks.
     expect(plan.tasks.first.acceptanceCriteria.first.text,
         'All W-2s are collected.');
     expect(llm.calls.length, 1);
+  });
+
+  test('parses fenced JSON with surrounding text on repair response', () async {
+    const fencedResponse = '''
+Here is the repaired plan:
+```json
+{
+  "action": "propose_plan",
+  "idea_type": "project",
+  "summary": "Build a capsule wardrobe for men with versatile pieces.",
+  "micro_tasks": [
+    {
+      "title": "Brainstorm core pieces",
+      "description": "List essential clothing items for the wardrobe.",
+      "est_minutes": 20,
+      "order_index": 1,
+      "acceptance_criteria": [
+        {"text": "List of essential items created", "evidence_type": "checkbox"}
+      ]
+    },
+    {
+      "title": "Pick matching items",
+      "description": "Choose pieces that can be mixed and matched.",
+      "est_minutes": 25,
+      "order_index": 2,
+      "acceptance_criteria": [
+        {"text": "Matching items selected", "evidence_type": "checkbox"}
+      ]
+    },
+    {
+      "title": "Write the shopping list",
+      "description": "Turn the selected items into a short shopping list.",
+      "est_minutes": 15,
+      "order_index": 3,
+      "acceptance_criteria": [
+        {"text": "Shopping list is written", "evidence_type": "note"}
+      ]
+    }
+  ]
+}
+```
+Thanks!
+''';
+
+    final llm = FakeLlmClient(scripted: [fencedResponse]);
+    final coordinator = Coordinator(llm);
+
+    final response = await coordinator.plan(goal: 'build a capsule wardrobe');
+
+    expect(response, isA<PlanResponse>());
+    expect(llm.calls.length, 1);
+  });
+
+  test(
+      'normalizes propose_plan criteria missing evidence_type without repair call',
+      () async {
+    const missingEvidence = '''
+{
+  "action": "propose_plan",
+  "idea_type": "project",
+  "summary": "Build a capsule wardrobe with versatile pieces.",
+  "micro_tasks": [
+    {
+      "title": "Brainstorm wardrobe staples",
+      "description": "List essential clothing items.",
+      "est_minutes": 15,
+      "order_index": 5,
+      "acceptance_criteria": [
+        {"text": "List of items created"},
+        {"text": "Items can be mixed and matched"}
+      ]
+    },
+    {
+      "title": "Audit current closet",
+      "description": "Check what you already own.",
+      "est_minutes": 20,
+      "order_index": 2,
+      "acceptance_criteria": [
+        {"text": "Ownable items identified"}
+      ]
+    },
+    {
+      "title": "Create final shopping list",
+      "description": "Capture missing pieces in one list.",
+      "est_minutes": 10,
+      "order_index": 9,
+      "acceptance_criteria": [
+        {"text": "Final list is written"}
+      ]
+    }
+  ]
+}
+''';
+
+    final llm = FakeLlmClient(scripted: [missingEvidence]);
+    final coordinator = Coordinator(llm);
+    final response = await coordinator.plan(goal: 'build a capsule wardrobe');
+    final plan = response as PlanResponse;
+
+    expect(llm.calls.length, 1);
+    expect(plan.tasks, hasLength(3));
+    expect(
+      plan.tasks
+          .expand((t) => t.acceptanceCriteria)
+          .every((c) => c.evidenceType == 'checkbox'),
+      isTrue,
+    );
+    expect(plan.tasks.map((t) => t.orderIndex).toList(), [1, 2, 3]);
+  });
+
+  test('returns JSON-shaped error envelope when unrecoverable', () async {
+    const invalid1 = 'not json at all';
+    const invalid2 = 'also not json';
+
+    final llm = FakeLlmClient(scripted: [invalid1, invalid2]);
+    final coordinator = Coordinator(llm);
+
+    try {
+      await coordinator.plan(goal: 'irrecoverable response');
+      fail('Expected CoordinatorException');
+    } on CoordinatorException catch (e) {
+      expect(e.errors, hasLength(1));
+      final envelope = jsonDecode(e.errors.first) as Map<String, dynamic>;
+      expect(envelope['action'], 'error');
+      expect(envelope['error_type'], 'planner_response_invalid');
+      expect(envelope['errors'], isA<List<dynamic>>());
+    }
   });
 }

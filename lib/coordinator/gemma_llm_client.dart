@@ -36,9 +36,9 @@ class GemmaLlmClient implements LlmClient {
     required String system,
     required String user,
   }) async {
-    // Low temperature for consistent, schema-shaped planning output.
+    // Deterministic sampling for consistent, schema-shaped planning output.
     final session = await _model.createSession(
-      temperature: 0.2,
+      temperature: 0.0,
       systemInstruction: system,
     );
     try {

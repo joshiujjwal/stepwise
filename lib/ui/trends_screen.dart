@@ -13,6 +13,7 @@ class TrendsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
+    final theme = Theme.of(context);
     final events = controller.store.events;
     final tasks = controller.allTasks;
 
@@ -32,13 +33,20 @@ class TrendsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Text(
+            'Track how you earn wins over time from your event timeline.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(child: _stat('Streak', '$streak d')),
+              Expanded(child: _stat(context, 'Streak', '$streak d')),
               const SizedBox(width: 12),
-              Expanded(child: _stat('Completed', '$totalDone')),
+              Expanded(child: _stat(context, 'Completed', '$totalDone')),
               const SizedBox(width: 12),
-              Expanded(child: _stat('Completion', '$completion%')),
+              Expanded(child: _stat(context, 'Completion', '$completion%')),
             ],
           ),
           const SizedBox(height: 16),
@@ -56,8 +64,10 @@ class TrendsScreen extends StatelessWidget {
           _card(
             'Estimate vs actual',
             points.isEmpty
-                ? const Text('Run the focus timer to see your calibration.',
-                    style: TextStyle(color: Colors.grey))
+                ? Text(
+                    'Run the focus timer to see your calibration.',
+                    style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                  )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -72,41 +82,44 @@ class TrendsScreen extends StatelessWidget {
     );
   }
 
-  Widget _stat(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(value,
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-        ],
+  Widget _stat(BuildContext context, String label, String value) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _card(String title, Widget child) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          const SizedBox(height: 8),
-          child,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: child,
+          ),
         ],
       ),
     );

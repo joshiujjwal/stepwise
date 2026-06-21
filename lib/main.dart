@@ -40,7 +40,6 @@ Future<void> main() async {
   final engine =
       EngineController(swappable: llm, modelService: _gemmaService());
 
-  await _seedDemo(controller);
   runApp(StepwiseApp(controller: controller, engine: engine));
 }
 
@@ -129,13 +128,6 @@ ModelType? _inferModelTypeFromSource(String sourceLocation) {
   return null;
 }
 
-Future<void> _seedDemo(AppController controller) async {
-  await controller.submitGoal('Plan a weekend trip');
-  if (controller.session?.phase == PlanningPhase.proposed) {
-    controller.confirmPlan();
-  }
-}
-
 class StepwiseApp extends StatelessWidget {
   const StepwiseApp({
     super.key,
@@ -153,8 +145,10 @@ class StepwiseApp extends StatelessWidget {
       child: EngineScope(
         controller: engine,
         child: MaterialApp(
-          title: 'stepwise',
+          title: 'StepWins',
           theme: buildStepwiseTheme(),
+          darkTheme: buildStepwiseDarkTheme(),
+          themeMode: ThemeMode.system,
           debugShowCheckedModeBanner: false,
           home: const HomeShell(),
         ),

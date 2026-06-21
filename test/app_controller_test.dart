@@ -94,6 +94,23 @@ void main() {
         c.store.events.any((e) => e.type == EventTypes.taskRetasked), isTrue);
   });
 
+  test('unstuck returns a blocked task to in progress and restores the idea',
+      () async {
+    final c = _controller();
+    await c.submitGoal('plan a trip');
+    final idea = c.confirmPlan();
+    final t = c.tasksForIdea(idea.id).first;
+
+    expect(c.startTask(t.id), isTrue);
+    expect(c.blockTask(t.id, "don't know where to start"), isTrue);
+    expect(c.ideas.single.status, IdeaStatus.stalled);
+
+    expect(c.unstuckTask(t.id), isTrue);
+    expect(c.taskById(t.id).state, TaskState.inProgress);
+    expect(c.ideas.single.status, IdeaStatus.active);
+    expect(c.store.events.any((e) => e.type == EventTypes.taskUnstuck), isTrue);
+  });
+
   test('focus timer accumulates focused seconds using injected clock',
       () async {
     var now = DateTime(2026, 6, 6, 9);
@@ -109,6 +126,23 @@ void main() {
     c.stopTimer(t.id);
     expect(c.isTimerRunning(t.id), isFalse);
     expect(c.taskById(t.id).focusSeconds, 12 * 60);
+  });
+
+  test('focus timer reports remaining seconds while running', () async {
+    var now = DateTime(2026, 6, 6, 9);
+    final c = _controller(clock: () => now);
+    await c.submitGoal('write a blog post');
+    final idea = c.confirmPlan();
+    final t = c.tasksForIdea(idea.id).first;
+
+    expect(c.remainingFocusSeconds(t.id), 15 * 60);
+    c.startTask(t.id);
+    c.startTimer(t.id);
+    now = now.add(const Duration(minutes: 1));
+    expect(c.remainingFocusSeconds(t.id), 14 * 60);
+
+    c.stopTimer(t.id);
+    expect(c.remainingFocusSeconds(t.id), 14 * 60);
   });
 
   test('availableTasks filters by duration bucket', () async {
