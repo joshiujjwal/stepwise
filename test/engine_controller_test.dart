@@ -83,4 +83,68 @@ void main() {
     expect(engine.mode, EngineMode.demo); // stayed on demo
     expect(engine.model.phase, ModelPhase.error);
   });
+
+  test('initialize stays on demo when no model service is configured',
+      () async {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine = EngineController(swappable: swap, modelService: null);
+
+    await engine.initialize();
+
+    expect(engine.mode, EngineMode.demo);
+  });
+
+  test('initialize enables gemma directly when model already installed',
+      () async {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine = EngineController(
+      swappable: swap,
+      modelService: _FakeModelService(installed: true),
+    );
+
+    await engine.initialize();
+
+    expect(engine.mode, EngineMode.gemma);
+    expect(swap.engineLabel, 'On-device Gemma');
+  });
+
+  test('initialize downloads then enables gemma when not installed', () async {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine =
+        EngineController(swappable: swap, modelService: _FakeModelService());
+
+    await engine.initialize();
+
+    expect(engine.model.phase, ModelPhase.ready);
+    expect(engine.mode, EngineMode.gemma);
+  });
+
+  test('engineStatusLabel reflects setup state before gemma is enabled', () {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine =
+        EngineController(swappable: swap, modelService: _FakeModelService());
+
+    engine.model = const ModelState(ModelPhase.downloading, progress: 0.42);
+
+    expect(engine.engineStatusLabel, 'Setting up on-device Gemma…');
+  });
+
+  test('engineStatusLabel shows demo label when no model is configured', () {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine = EngineController(swappable: swap, modelService: null);
+
+    expect(engine.engineStatusLabel, 'Demo (offline)');
+  });
+
+  test('engineStatusLabel shows gemma label once enabled', () async {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine = EngineController(
+      swappable: swap,
+      modelService: _FakeModelService(installed: true),
+    );
+
+    await engine.enableGemma();
+
+    expect(engine.engineStatusLabel, 'On-device Gemma');
+  });
 }

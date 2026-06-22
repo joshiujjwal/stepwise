@@ -25,6 +25,40 @@ class EngineController extends ChangeNotifier {
   bool get gemmaAvailable => modelService != null;
   String get engineLabel => swappable.engineLabel;
 
+  /// A user-facing label describing the active (or activating) engine. While the
+  /// configured model downloads on startup this reports the download progress so
+  /// the user can see Gemma is the default engine coming online, not demo.
+  String get engineStatusLabel {
+    if (mode == EngineMode.gemma) return engineLabel;
+    switch (model.phase) {
+      case ModelPhase.downloading:
+        return 'Setting up on-device Gemma…';
+      case ModelPhase.ready:
+        return 'On-device Gemma (starting…)';
+      case ModelPhase.error:
+        return '$engineLabel — model download failed';
+      case ModelPhase.unknown:
+      case ModelPhase.notInstalled:
+        return engineLabel;
+    }
+  }
+
+  /// Bring up the preferred engine on startup. When a model service is
+  /// configured (e.g. an Azure-hosted Gemma model) this downloads it if needed
+  /// and switches the app to on-device Gemma, so the app defaults to Gemma
+  /// instead of the offline demo planner. With no model configured it stays on
+  /// the demo planner so the app is still usable.
+  Future<void> initialize() async {
+    if (modelService == null) return;
+    await refreshStatus();
+    if (model.phase == ModelPhase.notInstalled) {
+      await downloadModel();
+    }
+    if (model.phase == ModelPhase.ready) {
+      await enableGemma();
+    }
+  }
+
   Future<void> refreshStatus() async {
     final service = modelService;
     if (service == null) {

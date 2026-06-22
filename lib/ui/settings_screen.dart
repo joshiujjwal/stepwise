@@ -17,9 +17,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => EngineScope.of(context).refreshStatus(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final engine = EngineScope.of(context);
+      if (engine.model.phase != ModelPhase.downloading) {
+        engine.refreshStatus();
+      }
+    });
   }
 
   @override
@@ -42,7 +45,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: ListTile(
               leading: const Icon(Icons.memory),
               title: const Text('AI engine'),
-              subtitle: Text(engine.engineLabel),
+              subtitle: Text(engine.engineStatusLabel),
+              trailing: engine.model.phase == ModelPhase.downloading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : null,
             ),
           ),
           const SizedBox(height: 8),
@@ -54,7 +64,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'On-device Gemma is not configured for this build. StepWins is '
                   'running its offline demo planner. To enable Gemma, run with '
                   '--dart-define=GEMMA_MODEL_URL=... or GEMMA_MODEL_FILE=... '
-                  '(see lib/main.dart).',
+                  'and optionally --dart-define=GEMMA_MODEL_TOKEN=... or '
+                  'AZURE_BLOB_SAS_TOKEN=... (see lib/main.dart).',
                   style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                 ),
               ),

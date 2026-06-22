@@ -21,6 +21,14 @@ class ModelState {
 
 /// Abstraction over the on-device model lifecycle, so Settings logic can be
 /// tested with a fake (the real one needs native MediaPipe + a multi-GB model).
+String? resolveModelAccessToken({
+  String? modelToken,
+  String? azureBlobSasToken,
+  String? huggingFaceToken,
+}) {
+  return modelToken ?? azureBlobSasToken ?? huggingFaceToken;
+}
+
 abstract interface class ModelService {
   /// A stable id used to check installation.
   String get modelId;

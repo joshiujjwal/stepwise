@@ -68,3 +68,4 @@ ios/.bundle/
 *.mobileprovision
 *.p12
 *.p8
+gemma.local.json

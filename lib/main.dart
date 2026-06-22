@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
@@ -24,9 +27,10 @@ Future<void> main() async {
     maxDownloadRetries: _maxDownloadRetriesDefine(),
   );
 
-  // The app starts in offline demo mode so it is fully usable with no model
-  // download. On-device Gemma can be enabled from Settings once a model URL is
-  // configured below (see _gemmaService).
+  // The app starts on the offline demo planner so it is usable immediately.
+  // When a model is configured (e.g. an Azure-hosted Gemma model via
+  // GEMMA_MODEL_URL), [EngineController.initialize] downloads it and switches
+  // the app to on-device Gemma, making Gemma the default engine.
   final llm = SwappableLlmClient(FakeLlmClient());
   final coordinator = Coordinator(llm);
   final controller = AppController(
@@ -39,6 +43,7 @@ Future<void> main() async {
   );
   final engine =
       EngineController(swappable: llm, modelService: _gemmaService());
+  unawaited(engine.initialize());
 
   runApp(StepwiseApp(controller: controller, engine: engine));
 }
@@ -52,7 +57,9 @@ Future<void> main() async {
 ///   --dart-define=GEMMA_MODEL_ASSET=assets/models/model.task
 ///
 /// Optional:
-///   --dart-define=HF_TOKEN=hf_...
+///   --dart-define=GEMMA_MODEL_TOKEN=... (explicit auth token for a private model)
+///   --dart-define=AZURE_BLOB_SAS_TOKEN=... (Azure Blob SAS token)
+///   --dart-define=HF_TOKEN=hf_... (fallback for Hugging Face-hosted models)
 ///   --dart-define=GEMMA_MODEL_TYPE=gemmaIt|gemma4|deepSeek|qwen|qwen3|functionGemma|phi|general
 ///   --dart-define=GEMMA_MAX_TOKENS=2048
 ///   --dart-define=GEMMA_MAX_DOWNLOAD_RETRIES=2
@@ -69,7 +76,11 @@ ModelService? _gemmaService() {
           ? const GemmaModelSource.asset(modelAsset)
           : GemmaModelSource.network(
               modelUrl,
-              token: _huggingFaceTokenDefine(),
+              token: resolveModelAccessToken(
+                modelToken: _optionalDefine('GEMMA_MODEL_TOKEN'),
+                azureBlobSasToken: _optionalDefine('AZURE_BLOB_SAS_TOKEN'),
+                huggingFaceToken: _huggingFaceTokenDefine(),
+              ),
             );
 
   final modelType = _modelTypeFromName(_optionalDefine('GEMMA_MODEL_TYPE')) ??
@@ -85,6 +96,17 @@ ModelService? _gemmaService() {
   );
 }
 
+String? readConfigValue(
+  String key, {
+  Map<String, String>? environment,
+}) {
+  final defineValue = String.fromEnvironment(key);
+  if (defineValue.isNotEmpty) return defineValue;
+  final envValue = (environment ?? Platform.environment)[key];
+  if (envValue != null && envValue.isNotEmpty) return envValue;
+  return null;
+}
+
 String? _huggingFaceTokenDefine() =>
     _optionalDefine('HF_TOKEN') ?? _optionalDefine('HUGGINGFACE_TOKEN');
 
@@ -95,10 +117,7 @@ int _maxDownloadRetriesDefine() {
   return configured;
 }
 
-String? _optionalDefine(String key) {
-  final value = String.fromEnvironment(key);
-  return value.isEmpty ? null : value;
-}
+String? _optionalDefine(String key) => readConfigValue(key);
 
 ModelType? _modelTypeFromName(String? raw) {
   if (raw == null) return null;
