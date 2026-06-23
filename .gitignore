@@ -69,3 +69,6 @@ ios/.bundle/
 *.p12
 *.p8
 gemma.local.json
+
+# Local build secrets for build-script.bash (model URL, SAS, team id)
+.env.build

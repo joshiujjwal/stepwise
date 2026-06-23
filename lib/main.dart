@@ -14,6 +14,7 @@ import 'state/app_controller.dart';
 import 'state/app_scope.dart';
 import 'state/engine_controller.dart';
 import 'state/engine_scope.dart';
+import 'state/sqflite_persistence_store.dart';
 import 'theme/app_theme.dart';
 import 'ui/execute_screen.dart';
 import 'ui/idea_screen.dart';
@@ -33,19 +34,40 @@ Future<void> main() async {
   // the app to on-device Gemma, making Gemma the default engine.
   final llm = SwappableLlmClient(FakeLlmClient());
   final coordinator = Coordinator(llm);
+  // Durable on-device store so ideas/tasks/history survive app restarts. If the
+  // database can't be opened the app still runs (in-memory only) rather than
+  // failing to start.
+  final persistence = await _openPersistence();
   final controller = AppController(
     coordinator: coordinator,
+    persistence: persistence,
     todoChunkingAgent: TodoChunkingAgent(
       coordinator: coordinator,
       systemPrompt: _optionalDefine('TODO_CHUNKING_SYSTEM_PROMPT') ??
           todoChunkingSystemPrompt,
     ),
   );
+  // Restoring must never block startup: a corrupt/incompatible row should leave
+  // the app running (empty or partially restored) rather than crash-looping.
+  try {
+    await controller.hydrate();
+  } catch (e) {
+    debugPrint('hydrate failed, starting without restored state: $e');
+  }
   final engine =
       EngineController(swappable: llm, modelService: _gemmaService());
   unawaited(engine.initialize());
 
   runApp(StepwiseApp(controller: controller, engine: engine));
+}
+
+Future<SqflitePersistenceStore?> _openPersistence() async {
+  try {
+    return await SqflitePersistenceStore.open();
+  } catch (e) {
+    debugPrint('persistence unavailable, running in-memory only: $e');
+    return null;
+  }
 }
 
 /// Configure on-device Gemma from compile-time defines so URLs/tokens/paths are

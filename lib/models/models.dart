@@ -60,6 +60,25 @@ class AcceptanceCriterion {
       evidenceValue: evidenceValue ?? this.evidenceValue,
     );
   }
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'text': text,
+        'evidenceType': evidenceType.name,
+        'satisfied': satisfied,
+        'evidenceValue': evidenceValue,
+      };
+
+  factory AcceptanceCriterion.fromMap(Map<String, Object?> map) {
+    return AcceptanceCriterion(
+      id: map['id']! as String,
+      text: map['text']! as String,
+      evidenceType: _enumByName(
+          EvidenceType.values, map['evidenceType'], EvidenceType.checkbox),
+      satisfied: (map['satisfied'] as bool?) ?? false,
+      evidenceValue: map['evidenceValue'] as String?,
+    );
+  }
 }
 
 class MicroTask {
@@ -114,6 +133,43 @@ class MicroTask {
       focusSeconds: focusSeconds ?? this.focusSeconds,
     );
   }
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'ideaId': ideaId,
+        'parentTaskId': parentTaskId,
+        'title': title,
+        'description': description,
+        'estMinutes': estMinutes,
+        'orderIndex': orderIndex,
+        'scheduledStart': scheduledStart?.toIso8601String(),
+        'state': state.name,
+        'focusSeconds': focusSeconds,
+        'acceptanceCriteria': [
+          for (final c in acceptanceCriteria) c.toMap(),
+        ],
+      };
+
+  factory MicroTask.fromMap(Map<String, Object?> map) {
+    final rawCriteria =
+        (map['acceptanceCriteria'] as List<Object?>?) ?? const [];
+    return MicroTask(
+      id: map['id']! as String,
+      ideaId: map['ideaId']! as String,
+      parentTaskId: map['parentTaskId'] as String?,
+      title: map['title']! as String,
+      description: (map['description'] as String?) ?? '',
+      estMinutes: (map['estMinutes'] as num).toInt(),
+      orderIndex: (map['orderIndex'] as num).toInt(),
+      scheduledStart: _parseDate(map['scheduledStart']),
+      state: _enumByName(TaskState.values, map['state'], TaskState.todo),
+      focusSeconds: (map['focusSeconds'] as num?)?.toInt() ?? 0,
+      acceptanceCriteria: [
+        for (final c in rawCriteria)
+          AcceptanceCriterion.fromMap((c as Map).cast<String, Object?>()),
+      ],
+    );
+  }
 }
 
 class Idea {
@@ -134,6 +190,29 @@ class Idea {
   final IdeaStatus status;
   final int planVersion;
   final DateTime createdAt;
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'title': title,
+        'rawInput': rawInput,
+        'type': type.name,
+        'status': status.name,
+        'planVersion': planVersion,
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  factory Idea.fromMap(Map<String, Object?> map) {
+    return Idea(
+      id: map['id']! as String,
+      title: map['title']! as String,
+      rawInput: (map['rawInput'] as String?) ?? '',
+      type: _enumByName(IdeaType.values, map['type'], IdeaType.other),
+      status:
+          _enumByName(IdeaStatus.values, map['status'], IdeaStatus.planning),
+      planVersion: (map['planVersion'] as num?)?.toInt() ?? 1,
+      createdAt: _parseDate(map['createdAt']) ?? DateTime.now(),
+    );
+  }
 }
 
 /// An append-only event (spec §1). Task state and trends are projections of these.
@@ -159,4 +238,54 @@ class EventRecord {
   final TaskState? toState;
   final Map<String, Object?> payload;
   final DateTime ts;
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'ideaId': ideaId,
+        'microTaskId': microTaskId,
+        'type': type,
+        'actor': actor,
+        'fromState': fromState?.name,
+        'toState': toState?.name,
+        'payload': Map<String, Object?>.from(payload),
+        'ts': ts.toIso8601String(),
+      };
+
+  factory EventRecord.fromMap(Map<String, Object?> map) {
+    final rawPayload = map['payload'];
+    return EventRecord(
+      id: map['id']! as String,
+      ideaId: map['ideaId']! as String,
+      microTaskId: map['microTaskId'] as String?,
+      type: map['type']! as String,
+      actor: map['actor']! as String,
+      fromState: _nullableEnumByName(TaskState.values, map['fromState']),
+      toState: _nullableEnumByName(TaskState.values, map['toState']),
+      payload: rawPayload is Map
+          ? rawPayload.cast<String, Object?>()
+          : const <String, Object?>{},
+      ts: _parseDate(map['ts']) ?? DateTime.now(),
+    );
+  }
+}
+
+T _enumByName<T extends Enum>(List<T> values, Object? name, T fallback) {
+  if (name is! String) return fallback;
+  for (final v in values) {
+    if (v.name == name) return v;
+  }
+  return fallback;
+}
+
+T? _nullableEnumByName<T extends Enum>(List<T> values, Object? name) {
+  if (name is! String) return null;
+  for (final v in values) {
+    if (v.name == name) return v;
+  }
+  return null;
+}
+
+DateTime? _parseDate(Object? value) {
+  if (value is! String || value.isEmpty) return null;
+  return DateTime.tryParse(value);
 }

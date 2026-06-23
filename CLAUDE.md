@@ -29,7 +29,8 @@ Full spec: `docs/spec.md` (design decisions A–H are locked). Planner contract:
   (on-device adapter).
 - `lib/state/` — `event_store.dart` (append-only log), `projections.dart` (pure read-models),
   `app_controller.dart` (`ChangeNotifier` orchestration), `app_scope.dart` (InheritedNotifier),
-  `task_state_machine.dart` (transitions + guards).
+  `task_state_machine.dart` (transitions + guards), `persistence_store.dart` (durable-store
+  interface + in-memory fake), `sqflite_persistence_store.dart` (sqflite backing).
 - `lib/ui/` — one file per screen (`idea_screen`, `execute_screen`, `calendar_day_view`,
   `idea_progress_screen`, `trends_screen`) + `widgets.dart`.
 - `tool/coordinator/` — `decomposition-contract.md` + `plan.schema.json` + `validate_plan.py` + `fixtures/` — **source of truth for planner output**.
@@ -52,11 +53,22 @@ Full spec: `docs/spec.md` (design decisions A–H are locked). Planner contract:
 - **Order is advisory.** `order_index` is a suggestion; any not-done task is "available". No hard deps.
 - **Event log + projections.** Every mutation also appends an `EventRecord`; **trends** are pure
   projections of that log (`projections.dart`). Entity **state** (ideas/tasks) is held in memory and the
-  authoritative copy in v1 — it is not yet rebuilt by replaying events (that hydration path is a
-  persistence parking-lot item). Always append an event when you mutate, so trends/history stay correct.
+  authoritative copy in v1. Always append an event when you mutate, so trends/history stay correct.
+- **Persistence (local, sqflite).** `AppController` takes an optional `PersistenceStore`; it
+  write-throughs every mutation and `hydrate()`s the snapshot (ideas+tasks) + event log on startup,
+  so data survives restarts. Persistence is **optional/null** in hermetic tests and the demo. `main.dart`
+  guards both DB-open and `hydrate()` so a corrupt row degrades to in-memory instead of crashing startup.
+  State is restored from a **snapshot**, not by *replaying* events (pure event-replay is still parked —
+  event payloads don't carry full task detail). Any new model field must be added to `toMap`/`fromMap`.
 - **Acceptance gate.** `awaiting_approval → done` requires ALL `acceptance_criteria` satisfied (checkbox default).
 - **Models are huge + git-ignored.** Never commit `.task/.bin/.litertlm/.gguf`. The app loads them at runtime.
 - **est_minutes** ∈ 5–60, multiple of 5; >60 must be split. `DurationBucket`: ≤15→15, ≤30→30, ≤45→45, else 60plus.
 
 ## Lessons
-- (Append discoveries here as you build.)
+- **Model id must keep its file extension.** `GemmaModelService.modelId` must equal the basename
+  flutter_gemma registers on install (e.g. `gemma3-1b-it.task`). Stripping the extension makes
+  `isModelInstalled` miss the on-disk model, so the app re-downloads every launch and forces a manual
+  "Download model" tap. (`lib/coordinator/model_service.dart`)
+- **Persistence is snapshot + write-through, and must never block startup.** Restore is guarded in
+  `main.dart` and `load()` skips corrupt rows per-row, so a bad blob degrades to in-memory rather than
+  crash-looping. New model fields need `toMap`/`fromMap` updates or they silently won't persist.

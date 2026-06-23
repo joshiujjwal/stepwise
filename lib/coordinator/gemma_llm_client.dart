@@ -22,10 +22,12 @@ class GemmaLlmClient implements LlmClient {
   /// (e.g. Gemma 3 1B) which is the planning sweet spot for on-device JSON.
   static Future<GemmaLlmClient> create({
     ModelType modelType = ModelType.gemmaIt,
+    ModelFileType fileType = ModelFileType.task,
     int maxTokens = 2048,
   }) async {
     final model = await FlutterGemmaPlugin.instance.createModel(
       modelType: modelType,
+      fileType: fileType,
       maxTokens: maxTokens,
     );
     return GemmaLlmClient(model);

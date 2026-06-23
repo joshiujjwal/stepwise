@@ -6,6 +6,7 @@ import '../coordinator/planner.dart';
 import '../coordinator/todo_chunking_agent.dart';
 import '../models/models.dart';
 import 'event_store.dart';
+import 'persistence_store.dart';
 import 'projections.dart';
 import 'task_state_machine.dart';
 
@@ -51,14 +52,17 @@ class PlanningSession {
 /// Note on event-sourcing scope (v1): the authoritative *entity* state
 /// (`_ideas`, `_tasks`) is held in memory and mutated directly; the event log is
 /// an append-only history that powers trends/projections (see projections.dart).
-/// State is NOT yet rebuilt by replaying events. When persistence lands (sqflite,
-/// parking lot), add a `hydrateFromEvents` path that replays the log to
-/// reconstruct entities on startup.
+/// Durability is provided by an optional [PersistenceStore] (sqflite): every
+/// mutation is written through and [hydrate] restores the snapshot + event log
+/// on startup, so data survives app restarts. State is still NOT reconstructed
+/// by *replaying* events; that pure event-replay hydration remains a parking-lot
+/// item (it would require event payloads to carry full task detail).
 class AppController extends ChangeNotifier {
   AppController({
     required this.coordinator,
     this.todoChunkingAgent,
     EventStore? store,
+    this.persistence,
     String Function()? idGen,
     DateTime Function()? clock,
   })  : store = store ?? InMemoryEventStore(),
@@ -68,12 +72,73 @@ class AppController extends ChangeNotifier {
   final Coordinator coordinator;
   final TodoChunkingAgent? todoChunkingAgent;
   final EventStore store;
+
+  /// Optional durable backing store. When supplied, entity state and the event
+  /// log are written through on every mutation and restored via [hydrate] on
+  /// startup, so data survives app restarts. Null in hermetic tests/demos.
+  final PersistenceStore? persistence;
+
   final String Function()? _idGen;
   final DateTime Function()? _clock;
 
   int _seq = 0;
   String _newId() => _idGen?.call() ?? 'id${_seq++}';
   DateTime _now() => _clock?.call() ?? DateTime.now();
+
+  // Serializes write-through persistence so sqflite never sees concurrent
+  // writes; a failed write is logged but never poisons later writes.
+  Future<void> _persistQueue = Future<void>.value();
+
+  void _enqueue(Future<void> Function(PersistenceStore store) op) {
+    final store = persistence;
+    if (store == null) return;
+    _persistQueue = _persistQueue
+        .then((_) => op(store))
+        .catchError((Object e) => debugPrint('persistence write failed: $e'));
+  }
+
+  /// Await all pending write-through operations. Primarily for tests and a
+  /// clean shutdown; UI code does not need to call this.
+  Future<void> flushPersistence() => _persistQueue;
+
+  /// Restore entity state and the event log from [persistence] on startup.
+  /// No-op when persistence is not configured. Safe to call once before the
+  /// first frame; later mutations are written through automatically.
+  Future<void> hydrate() async {
+    final store = persistence;
+    if (store == null) return;
+    final snapshot = await store.load();
+    _ideas
+      ..clear()
+      ..addAll(snapshot.ideas);
+    _tasks
+      ..clear()
+      ..addAll(snapshot.tasks);
+    for (final event in snapshot.events) {
+      this.store.append(event);
+    }
+    _advanceSeqPastRestoredIds(snapshot);
+    notifyListeners();
+  }
+
+  // Generated ids look like `idN`. After hydrating restored entities we must
+  // bump _seq past the highest id index so new ids never collide — including
+  // [PersistedState.maxIdSeq], which also accounts for rows that were present
+  // but skipped during decode (a corrupt latest write).
+  void _advanceSeqPastRestoredIds(PersistedState snapshot) {
+    final max = maxIdSeqOf(
+      [
+        for (final idea in snapshot.ideas) idea.id,
+        for (final task in snapshot.tasks) ...[
+          task.id,
+          for (final c in task.acceptanceCriteria) c.id,
+        ],
+        for (final event in snapshot.events) event.id,
+      ],
+      floor: snapshot.maxIdSeq > _seq - 1 ? snapshot.maxIdSeq : _seq - 1,
+    );
+    _seq = max + 1;
+  }
 
   final List<Idea> _ideas = [];
   final List<MicroTask> _tasks = [];
@@ -203,11 +268,14 @@ class AppController extends ChangeNotifier {
       createdAt: _now(),
     );
     _ideas.add(idea);
+    _enqueue((p) => p.upsertIdea(idea));
     _append(idea.id, EventTypes.ideaCreated);
     _append(idea.id, EventTypes.planConfirmed,
         payload: {'taskCount': proposal.tasks.length});
     for (final pt in proposal.tasks) {
-      _tasks.add(_materialize(idea.id, null, pt));
+      final task = _materialize(idea.id, null, pt);
+      _tasks.add(task);
+      _enqueue((p) => p.upsertTask(task));
     }
     _session = null;
     notifyListeners();
@@ -262,6 +330,7 @@ class AppController extends ChangeNotifier {
             c,
       ],
     );
+    _enqueue((p) => p.upsertTask(_tasks[i]));
     _append(t.ideaId, EventTypes.criterionSatisfied,
         microTaskId: taskId, payload: {'criterionId': criterionId});
     notifyListeners();
@@ -270,6 +339,7 @@ class AppController extends ChangeNotifier {
   void scheduleTask(String taskId, DateTime start) {
     final i = _indexOf(taskId);
     _tasks[i] = _tasks[i].copyWith(scheduledStart: start);
+    _enqueue((p) => p.upsertTask(_tasks[i]));
     _append(_tasks[i].ideaId, EventTypes.taskScheduled,
         microTaskId: taskId, payload: {'start': start.toIso8601String()});
     notifyListeners();
@@ -295,6 +365,7 @@ class AppController extends ChangeNotifier {
     _tasks[i] = _tasks[i].copyWith(
       focusSeconds: _tasks[i].focusSeconds + seconds,
     );
+    _enqueue((p) => p.upsertTask(_tasks[i]));
     _append(_tasks[i].ideaId, EventTypes.timerStopped,
         microTaskId: taskId, payload: {'seconds': seconds});
     if (_timerRunning.isEmpty) _stopTimerTicker();
@@ -315,11 +386,14 @@ class AppController extends ChangeNotifier {
     // than corrupting state; the user can retry from the unchanged task.
     if (resp is! PlanResponse) return;
     _tasks[i] = parent.copyWith(state: TaskState.reTasked);
+    _enqueue((p) => p.upsertTask(_tasks[i]));
     _append(parent.ideaId, EventTypes.taskRetasked,
         microTaskId: taskId, payload: {'children': resp.tasks.length});
     final base = _maxOrder(parent.ideaId);
     for (final pt in resp.tasks) {
-      _tasks.add(_materialize(parent.ideaId, parent.id, pt, baseOrder: base));
+      final child = _materialize(parent.ideaId, parent.id, pt, baseOrder: base);
+      _tasks.add(child);
+      _enqueue((p) => p.upsertTask(child));
     }
     _recomputeIdeaStatus(parent.ideaId);
     notifyListeners();
@@ -358,6 +432,7 @@ class AppController extends ChangeNotifier {
     if (result is TransitionDenied) return false;
     final from = _tasks[i].state;
     _tasks[i] = (result as TransitionOk).task;
+    _enqueue((p) => p.upsertTask(_tasks[i]));
     _append(_tasks[i].ideaId, eventType,
         microTaskId: id, fromState: from, toState: to, payload: payload);
     notifyListeners();
@@ -388,6 +463,7 @@ class AppController extends ChangeNotifier {
       planVersion: old.planVersion,
       createdAt: old.createdAt,
     );
+    _enqueue((p) => p.upsertIdea(_ideas[i]));
   }
 
   MicroTask _materialize(String ideaId, String? parentId, PlannedTask pt,
@@ -416,7 +492,7 @@ class AppController extends ChangeNotifier {
       TaskState? fromState,
       TaskState? toState,
       Map<String, Object?> payload = const {}}) {
-    store.append(EventRecord(
+    final record = EventRecord(
       id: _newId(),
       ideaId: ideaId,
       microTaskId: microTaskId,
@@ -426,7 +502,9 @@ class AppController extends ChangeNotifier {
       toState: toState,
       payload: payload,
       ts: _now(),
-    ));
+    );
+    store.append(record);
+    _enqueue((p) => p.appendEvent(record));
   }
 
   static IdeaType _typeFrom(String s) => IdeaType.values

@@ -23,8 +23,9 @@ abstract final class EventTypes {
 }
 
 /// Append-only log of domain events. The source of truth for trends/history
-/// (spec §1). The in-memory implementation runs in-app today; a sqflite
-/// write-through adapter is a device-runtime concern (parking lot).
+/// (spec §1). This in-memory implementation is the runtime read model; durable
+/// backing is provided by `SqflitePersistenceStore` (see persistence_store.dart),
+/// which the controller hydrates from on startup and writes through on mutation.
 abstract interface class EventStore {
   void append(EventRecord event);
 
