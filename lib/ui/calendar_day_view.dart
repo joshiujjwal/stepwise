@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../state/app_controller.dart';
+import '../theme/tokens.dart';
 import 'widgets.dart';
 
 /// Day timeline where tasks render as duration-sized blocks (meeting-block
@@ -16,6 +17,7 @@ class CalendarDayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final space = context.space;
     final available = controller.availableTasks();
     final scheduled = available.where((t) => t.scheduledStart != null).toList();
     final unscheduled =
@@ -23,7 +25,7 @@ class CalendarDayView extends StatelessWidget {
     final totalHeight = (_endHour - _startHour) * 60 * _ppm;
 
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(space.md),
       children: [
         SizedBox(
           height: totalHeight,
@@ -40,9 +42,8 @@ class CalendarDayView extends StatelessWidget {
                         width: 56,
                         child: Text(
                           '$h:00',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 12,
+                          style: context.texts.bodySmall?.copyWith(
+                            color: context.colors.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -58,32 +59,37 @@ class CalendarDayView extends StatelessWidget {
                   right: 0,
                   height: t.estMinutes * _ppm,
                   child: Container(
-                    margin: const EdgeInsets.only(right: 4, bottom: 2),
-                    padding: const EdgeInsets.all(6),
+                    margin: EdgeInsets.only(right: space.xs, bottom: 2),
+                    padding: EdgeInsets.all(space.xs + 2),
                     decoration: BoxDecoration(
                       color: stateColor(context, t.state),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outlineVariant,
+                      borderRadius: context.radius.smAll,
+                      border: Border.all(color: context.colors.outlineVariant),
+                    ),
+                    child: Text(
+                      '${t.title}  (${t.estMinutes}m)',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.texts.bodySmall?.copyWith(
+                        color: stateOnColor(context, t.state),
                       ),
                     ),
-                    child: Text('${t.title}  (${t.estMinutes}m)',
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
                 ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: space.md),
         if (unscheduled.isNotEmpty) ...[
           Text(
             'Unscheduled - tap to drop onto your day',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: context.texts.bodyMedium
+                ?.copyWith(color: context.colors.onSurfaceVariant),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: space.sm),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: space.sm,
+            runSpacing: space.sm,
             children: [
               for (final t in unscheduled)
                 ActionChip(

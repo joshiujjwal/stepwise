@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../state/app_controller.dart';
 import '../state/app_scope.dart';
+import '../theme/tokens.dart';
 import 'widgets.dart';
 
 /// Task detail view with the approval gate and focus timer.
@@ -16,20 +17,19 @@ class IdeaProgressScreen extends StatelessWidget {
     final controller = AppScope.of(context);
     final task = controller.taskById(taskId);
     final idea = controller.ideas.firstWhere((i) => i.id == task.ideaId);
+    final space = context.space;
 
     return Scaffold(
       appBar: AppBar(title: Text(task.title)),
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(space.lg),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 4, 4, 12),
+            padding: EdgeInsets.only(bottom: space.md),
             child: Text(
               idea.title,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
+              style: context.texts.labelLarge
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
           ),
           _TaskCard(controller: controller, task: task),
@@ -46,11 +46,12 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final space = context.space;
     final indented = task.parentTaskId != null;
     return Card(
-      margin: EdgeInsets.fromLTRB(indented ? 20 : 0, 0, 0, 0),
+      margin: EdgeInsets.only(left: indented ? space.xl : 0),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(space.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,21 +62,19 @@ class _TaskCard extends StatelessWidget {
                 DurationBadge(task.estMinutes),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: space.md),
             Text(
               task.description,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontSize: 13,
-              ),
+              style: context.texts.bodyMedium
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: space.md),
             ..._actionsFor(context),
             if (controller.isTimerRunning(task.id)) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: space.md),
               Text(
                 'Time left: ${_formatCountdown(controller.remainingFocusSeconds(task.id))}',
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: context.texts.titleMedium,
               ),
             ],
           ],
@@ -85,10 +84,11 @@ class _TaskCard extends StatelessWidget {
   }
 
   List<Widget> _actionsFor(BuildContext context) {
+    final space = context.space;
     switch (task.state) {
       case TaskState.todo:
         return [
-          Wrap(spacing: 8, children: [
+          Wrap(spacing: space.sm, children: [
             FilledButton(
               onPressed: () => controller.startTask(task.id),
               child: const Text('Start'),
@@ -97,7 +97,7 @@ class _TaskCard extends StatelessWidget {
         ];
       case TaskState.inProgress:
         return [
-          Wrap(spacing: 8, children: [
+          Wrap(spacing: space.sm, runSpacing: space.sm, children: [
             if (controller.isTimerRunning(task.id))
               OutlinedButton.icon(
                 onPressed: () => controller.stopTimer(task.id),
@@ -122,8 +122,7 @@ class _TaskCard extends StatelessWidget {
         ];
       case TaskState.awaitingApproval:
         return [
-          const Text('Definition of done',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Definition of done', style: context.texts.titleMedium),
           for (final c in task.acceptanceCriteria)
             CheckboxListTile(
               dense: true,
@@ -143,7 +142,7 @@ class _TaskCard extends StatelessWidget {
                   ? null
                   : Text('evidence: ${c.evidenceType.name}'),
             ),
-          Wrap(spacing: 8, children: [
+          Wrap(spacing: space.sm, runSpacing: space.sm, children: [
             FilledButton(
               onPressed: task.allCriteriaSatisfied
                   ? () => controller.approveTask(task.id)
@@ -158,8 +157,8 @@ class _TaskCard extends StatelessWidget {
         ];
       case TaskState.blocked:
         return [
-          const Text('Blocked'),
-          const SizedBox(height: 8),
+          Text('Blocked', style: context.texts.bodyMedium),
+          SizedBox(height: space.sm),
           OutlinedButton(
             onPressed: () => controller.unstuckTask(task.id),
             child: const Text("I'm unstuck"),
@@ -170,18 +169,19 @@ class _TaskCard extends StatelessWidget {
           Row(children: [
             Icon(
               Icons.check_circle,
-              color: Theme.of(context).colorScheme.tertiary,
+              color: stateOnColor(context, TaskState.done),
               size: 18,
             ),
-            const SizedBox(width: 6),
-            const Text('Done'),
+            SizedBox(width: space.xs),
+            Text('Done', style: context.texts.bodyMedium),
           ]),
         ];
       case TaskState.reTasked:
         return [
           Text(
             'Blocked task replaced by smaller steps below.',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: context.texts.bodyMedium
+                ?.copyWith(color: context.colors.onSurfaceVariant),
           ),
         ];
     }

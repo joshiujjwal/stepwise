@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../coordinator/model_service.dart';
 import '../state/engine_controller.dart';
 import '../state/engine_scope.dart';
+import '../theme/tokens.dart';
+import 'widgets.dart';
 
 /// Settings - manage the AI engine. The app runs offline in demo mode by
 /// default; on-device Gemma can be downloaded and enabled here (spec / ADR 0002).
@@ -28,22 +30,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final engine = EngineScope.of(context);
-    final theme = Theme.of(context);
+    final space = context.space;
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(space.lg),
         children: [
-          Text(
-            'Tune your planner engine and privacy defaults to keep earning wins.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+          const ScreenHeader(
+            title: 'Settings',
+            subtitle:
+                'Tune your planner engine and privacy defaults to keep earning wins.',
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: space.lg),
           Card(
             child: ListTile(
-              leading: const Icon(Icons.memory),
+              leading: Icon(Icons.memory, color: context.colors.primary),
               title: const Text('AI engine'),
               subtitle: Text(engine.engineStatusLabel),
               trailing: engine.model.phase == ModelPhase.downloading
@@ -55,24 +56,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   : null,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: space.md),
           if (!engine.gemmaAvailable)
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(space.lg),
                 child: Text(
                   'On-device Gemma is not configured for this build. StepWins is '
                   'running its offline demo planner. To enable Gemma, run with '
                   '--dart-define=GEMMA_MODEL_URL=... or GEMMA_MODEL_FILE=... '
                   'and optionally --dart-define=GEMMA_MODEL_TOKEN=... or '
                   'AZURE_BLOB_SAS_TOKEN=... (see lib/main.dart).',
-                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                  style: context.texts.bodyMedium
+                      ?.copyWith(color: context.colors.onSurfaceVariant),
                 ),
               ),
             )
           else
             _gemmaCard(engine),
-          const SizedBox(height: 8),
+          SizedBox(height: space.md),
           _privacyNote(),
         ],
       ),
@@ -81,24 +83,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _gemmaCard(EngineController engine) {
     final model = engine.model;
+    final space = context.space;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(space.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('On-device Gemma',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(_statusText(model),
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
-            const SizedBox(height: 12),
+            Text('On-device Gemma', style: context.texts.titleMedium),
+            SizedBox(height: space.xs),
+            Text(
+              _statusText(model),
+              style: context.texts.bodyMedium
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
+            ),
+            SizedBox(height: space.md),
             if (model.phase == ModelPhase.downloading)
               LinearProgressIndicator(value: model.progress)
             else
               Wrap(
-                spacing: 8,
+                spacing: space.sm,
+                runSpacing: space.sm,
                 children: [
                   if (model.phase != ModelPhase.ready)
                     FilledButton.icon(
@@ -131,9 +136,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             if (model.phase == ModelPhase.error && model.error != null) ...[
-              const SizedBox(height: 8),
-              Text(model.error!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12)),
+              SizedBox(height: space.sm),
+              Text(
+                model.error!,
+                style: context.texts.bodySmall
+                    ?.copyWith(color: context.colors.error),
+              ),
             ],
           ],
         ),
@@ -142,19 +150,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _privacyNote() {
-    final onSurfaceVariant = Theme.of(context).colorScheme.onSurfaceVariant;
+    final space = context.space;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(space.lg),
         child: Row(
           children: [
-            const Icon(Icons.lock_outline, size: 18),
-            const SizedBox(width: 8),
+            Icon(Icons.lock_outline, size: 18, color: context.colors.primary),
+            SizedBox(width: space.sm),
             Expanded(
               child: Text(
                 'Everything runs on your device. Your ideas and tasks never '
                 'leave your phone.',
-                style: TextStyle(color: onSurfaceVariant),
+                style: context.texts.bodyMedium
+                    ?.copyWith(color: context.colors.onSurfaceVariant),
               ),
             ),
           ],

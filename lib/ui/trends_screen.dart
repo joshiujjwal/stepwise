@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../state/app_scope.dart';
 import '../state/projections.dart';
+import '../theme/tokens.dart';
+import 'widgets.dart';
 
 /// Trends - throughput, streak, completion rate, estimate-vs-actual calibration,
 /// and a friction map. All projected from the event log (spec sections 5/6).
@@ -13,7 +15,7 @@ class TrendsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
-    final theme = Theme.of(context);
+    final space = context.space;
     final events = controller.store.events;
     final tasks = controller.allTasks;
 
@@ -31,94 +33,59 @@ class TrendsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Trends')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(space.lg),
         children: [
-          Text(
-            'Track how you earn wins over time from your event timeline.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+          const ScreenHeader(
+            title: 'Trends',
+            subtitle:
+                'Track how you earn wins over time from your event timeline.',
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: space.lg),
           Row(
             children: [
-              Expanded(child: _stat(context, 'Streak', '$streak d')),
-              const SizedBox(width: 12),
-              Expanded(child: _stat(context, 'Completed', '$totalDone')),
-              const SizedBox(width: 12),
-              Expanded(child: _stat(context, 'Completion', '$completion%')),
+              Expanded(child: StatCard(label: 'Streak', value: '$streak d')),
+              SizedBox(width: space.md),
+              Expanded(
+                  child: StatCard(label: 'Completed', value: '$totalDone')),
+              SizedBox(width: space.md),
+              Expanded(
+                  child: StatCard(label: 'Completion', value: '$completion%')),
             ],
           ),
-          const SizedBox(height: 16),
-          _card(
-              'Where you get stuck',
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Blocked: ${friction.blocked}'),
-                  Text('Re-tasked: ${friction.reTasked}'),
-                  Text('Rejected: ${friction.rejected}'),
-                ],
-              )),
-          const SizedBox(height: 16),
-          _card(
-            'Estimate vs actual',
-            points.isEmpty
+          SizedBox(height: space.lg),
+          SectionCard(
+            title: 'Where you get stuck',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Blocked: ${friction.blocked}',
+                    style: context.texts.bodyMedium),
+                Text('Re-tasked: ${friction.reTasked}',
+                    style: context.texts.bodyMedium),
+                Text('Rejected: ${friction.rejected}',
+                    style: context.texts.bodyMedium),
+              ],
+            ),
+          ),
+          SizedBox(height: space.lg),
+          SectionCard(
+            title: 'Estimate vs actual',
+            child: points.isEmpty
                 ? Text(
                     'Run the focus timer to see your calibration.',
-                    style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                    style: context.texts.bodyMedium
+                        ?.copyWith(color: context.colors.onSurfaceVariant),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       for (final p in points)
-                        Text('est ${p.estMinutes}m  ->  actual '
-                            '${p.actualMinutes}m'),
+                        Text(
+                          'est ${p.estMinutes}m  ->  actual ${p.actualMinutes}m',
+                          style: context.texts.bodyMedium,
+                        ),
                     ],
                   ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _stat(BuildContext context, String label, String value) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text(value,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _card(String title, Widget child) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: child,
           ),
         ],
       ),

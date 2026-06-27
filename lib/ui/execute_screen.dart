@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../state/app_controller.dart';
 import '../state/app_scope.dart';
+import '../theme/tokens.dart';
 import 'idea_progress_screen.dart';
 import 'widgets.dart';
 
@@ -21,27 +22,24 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = AppScope.of(context);
-    final theme = Theme.of(context);
+    final space = context.space;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Execute'),
-      ),
+      appBar: AppBar(title: const Text('Execute')),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Align(
+            padding:
+                EdgeInsets.fromLTRB(space.lg, space.sm, space.lg, space.sm),
+            child: const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Earn your win one micro task at a time.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+              child: ScreenHeader(
+                title: 'Execute',
+                subtitle: 'Earn your win one micro task at a time.',
               ),
             ),
           ),
           _filterBar(),
-          const Divider(height: 1),
+          const Divider(),
           Expanded(child: _list(controller)),
         ],
       ),
@@ -49,6 +47,7 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
   }
 
   Widget _filterBar() {
+    final space = context.space;
     final timeOptions = <(String, DurationBucket?)>[
       ('All', null),
       ('15 min', DurationBucket.m15),
@@ -61,65 +60,60 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
       ('Flat', false),
     ];
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
+      padding: EdgeInsets.fromLTRB(space.sm, space.sm, space.sm, space.md),
       child: Column(
         children: [
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('Time:'),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (final (label, bucket) in timeOptions)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: ChoiceChip(
-                            label: Text(label),
-                            selected: _bucket == bucket,
-                            onSelected: (_) => setState(() => _bucket = bucket),
-                          ),
-                        ),
-                    ],
-                  ),
+          _filterRow(
+            'Time:',
+            [
+              for (final (label, bucket) in timeOptions)
+                ChoiceChip(
+                  label: Text(label),
+                  selected: _bucket == bucket,
+                  onSelected: (_) => setState(() => _bucket = bucket),
                 ),
-              ),
             ],
           ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('View:'),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (final (label, grouped) in viewOptions)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: ChoiceChip(
-                            label: Text(label),
-                            selected: _groupByIdea == grouped,
-                            onSelected: (_) =>
-                                setState(() => _groupByIdea = grouped),
-                          ),
-                        ),
-                    ],
-                  ),
+          SizedBox(height: space.sm),
+          _filterRow(
+            'View:',
+            [
+              for (final (label, grouped) in viewOptions)
+                ChoiceChip(
+                  label: Text(label),
+                  selected: _groupByIdea == grouped,
+                  onSelected: (_) => setState(() => _groupByIdea = grouped),
                 ),
-              ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _filterRow(String label, List<Widget> chips) {
+    final space = context.space;
+    return Row(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: space.sm),
+          child: Text(label, style: context.texts.labelLarge),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final chip in chips)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: space.xs),
+                    child: chip,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -128,14 +122,13 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
     if (tasks.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(context.space.xl),
           child: Text(
             'No wins to earn yet. Add an idea on the Idea tab, or pick a '
             'different time filter.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: context.texts.bodyMedium
+                ?.copyWith(color: context.colors.onSurfaceVariant),
           ),
         ),
       );
@@ -158,6 +151,7 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
   }
 
   Widget _groupedList(AppController controller, List<MicroTask> tasks) {
+    final space = context.space;
     final ideaById = {for (final idea in controller.ideas) idea.id: idea};
     final grouped = <String, List<MicroTask>>{};
     for (final task in tasks) {
@@ -178,31 +172,41 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
       );
 
     return ListView.builder(
+      padding: EdgeInsets.only(bottom: space.lg),
       itemCount: groups.length,
       itemBuilder: (context, index) {
         final group = groups[index];
         return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          margin: EdgeInsets.fromLTRB(space.lg, space.xs, space.lg, space.sm),
           child: ExpansionTile(
             key: PageStorageKey('idea-group-${group.idea.id}'),
             initiallyExpanded: true,
-            title: Text(group.idea.title),
+            shape: const Border(),
+            collapsedShape: const Border(),
+            title: Text(group.idea.title, style: context.texts.titleMedium),
             subtitle: Text(
               '${group.idea.type.name} · ${group.doneCount}/${group.totalCount} tasks done',
+              style: context.texts.bodySmall
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 6, 16, 4),
+              Padding(
+                padding: EdgeInsets.fromLTRB(space.lg, 0, space.lg, space.xs),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Micro tasks'),
+                  child: Text(
+                    'Micro tasks',
+                    style: context.texts.labelMedium
+                        ?.copyWith(color: context.colors.onSurfaceVariant),
+                  ),
                 ),
               ),
               for (final task in group.tasks)
                 _microTaskCard(
                   task: task,
                   idea: group.idea,
-                  margin: const EdgeInsets.fromLTRB(8, 2, 8, 6),
+                  margin: EdgeInsets.fromLTRB(
+                      space.sm, space.xs, space.sm, space.sm),
                 ),
             ],
           ),
@@ -214,10 +218,12 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
   Widget _microTaskCard({
     required MicroTask task,
     required Idea idea,
-    EdgeInsets margin = const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    EdgeInsets? margin,
   }) {
+    final space = context.space;
     return Card(
-      margin: margin,
+      margin: margin ??
+          EdgeInsets.symmetric(horizontal: space.lg, vertical: space.xs),
       child: ListTile(
         title: Text(task.title),
         subtitle: Text('${idea.type.name} · ${idea.title}'),

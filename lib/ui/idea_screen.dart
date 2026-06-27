@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../state/app_controller.dart';
 import '../state/app_scope.dart';
+import '../theme/tokens.dart';
+import 'widgets.dart';
 
 /// Idea tab - conversational capture (clarify -> streamed plan -> Confirm/Revise).
 /// Wireframe: docs/wireframes/6-idea-capture. Spec sections 4 and 11.
@@ -28,15 +30,16 @@ class _IdeaScreenState extends State<IdeaScreen> {
     final controller = AppScope.of(context);
     final session = controller.session;
     final phase = session?.phase;
+    final space = context.space;
     return Scaffold(
       appBar: AppBar(title: const Text('Idea')),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(space.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _PhaseHeader(phase: phase),
-            const SizedBox(height: 16),
+            SizedBox(height: space.lg),
             Expanded(
               child: switch (phase) {
                 null || PlanningPhase.idle => _capture(controller),
@@ -53,23 +56,17 @@ class _IdeaScreenState extends State<IdeaScreen> {
   }
 
   Widget _capture(AppController controller) {
-    final theme = Theme.of(context);
+    final space = context.space;
     final text = _goal.text.trim();
     return ListView(
       children: [
-        Text(
-          'Capture one TODO',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+        const ScreenHeader(
+          title: 'Capture one TODO',
+          subtitle:
+              'Keep it simple: one task, one sentence. We will chunk it into '
+              'clear next steps so you can earn your win.',
         ),
-        const SizedBox(height: 6),
-        Text(
-          'Keep it simple: one task, one sentence. We will chunk it into clear next steps so you can earn your win.',
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: 16),
+        SizedBox(height: space.lg),
         Tooltip(
           message: 'Describe one TODO you want to capture.',
           child: Semantics(
@@ -82,21 +79,20 @@ class _IdeaScreenState extends State<IdeaScreen> {
               maxLines: 7,
               onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
                 labelText: 'Your TODO',
                 hintText: 'Describe one TODO',
               ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: space.sm),
         Text(
           '${text.characters.length} characters',
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: context.texts.bodySmall
+              ?.copyWith(color: context.colors.onSurfaceVariant),
           textAlign: TextAlign.right,
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: space.md),
         Tooltip(
           message: 'Split this TODO into smaller steps.',
           child: Semantics(
@@ -112,31 +108,31 @@ class _IdeaScreenState extends State<IdeaScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: space.sm),
         Text(
           'Review the plan before saving, then earn your win one step at a time.',
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: context.texts.bodySmall
+              ?.copyWith(color: context.colors.onSurfaceVariant),
         ),
       ],
     );
   }
 
   Widget _thinking() {
-    return const Center(
+    final space = context.space;
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 14),
-          Text(
-            'Thinking...',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
+          const CircularProgressIndicator(),
+          SizedBox(height: space.lg),
+          Text('Thinking...', style: context.texts.titleMedium),
+          SizedBox(height: space.sm),
           Text(
             'Building tiny, time-doable steps so you can earn your win.',
             textAlign: TextAlign.center,
+            style: context.texts.bodyMedium
+                ?.copyWith(color: context.colors.onSurfaceVariant),
           ),
         ],
       ),
@@ -144,54 +140,44 @@ class _IdeaScreenState extends State<IdeaScreen> {
   }
 
   Widget _clarify(AppController controller, PlanningSession session) {
-    final theme = Theme.of(context);
+    final space = context.space;
     return ListView(
       children: [
-        Text(
-          'A few clarifying details',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+        const ScreenHeader(
+          title: 'A few clarifying details',
+          subtitle: 'Answer once so the plan can be cleaner.',
         ),
-        const SizedBox(height: 6),
-        Text(
-          'Answer once so the plan can be cleaner.',
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: 16),
+        SizedBox(height: space.lg),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(space.md),
             child: Text(
               'TODO: ${session.goal}',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: context.texts.bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: space.md),
         for (var i = 0; i < session.questions.length; i++)
           Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.only(bottom: space.sm),
             child: Text(
               '${i + 1}. ${session.questions[i]}',
-              style: theme.textTheme.bodyLarge,
+              style: context.texts.bodyLarge,
             ),
           ),
-        const SizedBox(height: 6),
+        SizedBox(height: space.xs),
         TextField(
           controller: _answer,
           minLines: 2,
           maxLines: 5,
           decoration: const InputDecoration(
-            border: OutlineInputBorder(),
             labelText: 'Your answer',
             hintText: 'Add details that help chunk this better',
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: space.md),
         FilledButton(
           onPressed: () => controller.submitAnswers(_answer.text.trim()),
           child: const Text('Send'),
@@ -201,45 +187,43 @@ class _IdeaScreenState extends State<IdeaScreen> {
   }
 
   Widget _proposed(AppController controller, PlanningSession session) {
-    final theme = Theme.of(context);
+    final space = context.space;
     final tasks = session.proposal!.tasks;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Proposed plan (${tasks.length} steps)',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+        ScreenHeader(
+          title: 'Proposed plan (${tasks.length} steps)',
+          subtitle: 'Review quickly, then confirm and start earning your win.',
         ),
-        const SizedBox(height: 6),
-        Text(
-          'Review quickly, then confirm and start earning your win.',
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: 8),
+        SizedBox(height: space.md),
         Expanded(
           child: ListView.builder(
             itemCount: tasks.length,
             itemBuilder: (context, i) {
               final t = tasks[i];
               return Card(
-                margin: const EdgeInsets.only(bottom: 8),
+                margin: EdgeInsets.only(bottom: space.sm),
                 child: ListTile(
-                  dense: true,
                   leading: CircleAvatar(
-                    radius: 14,
-                    child: Text('${i + 1}'),
+                    radius: 16,
+                    backgroundColor:
+                        context.colors.primary.withValues(alpha: 0.14),
+                    child: Text(
+                      '${i + 1}',
+                      style: context.texts.labelLarge
+                          ?.copyWith(color: context.colors.primary),
+                    ),
                   ),
                   title: Text(t.title),
                   subtitle: Text(t.description),
-                  trailing: Text('${t.estMinutes}m'),
+                  trailing: DurationBadge(t.estMinutes),
                 ),
               );
             },
           ),
         ),
+        SizedBox(height: space.sm),
         Row(
           children: [
             Expanded(
@@ -257,7 +241,7 @@ class _IdeaScreenState extends State<IdeaScreen> {
                 child: const Text('Confirm plan'),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: space.md),
             OutlinedButton(
               onPressed: controller.discardPlan,
               child: const Text('Start over'),
@@ -269,6 +253,7 @@ class _IdeaScreenState extends State<IdeaScreen> {
   }
 
   Widget _error(AppController controller, PlanningSession session) {
+    final space = context.space;
     final presentation = _friendlyError(session.error);
     return Center(
       child: ConstrainedBox(
@@ -277,31 +262,25 @@ class _IdeaScreenState extends State<IdeaScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 40),
-              const SizedBox(height: 8),
+              Icon(Icons.error_outline, color: context.colors.error, size: 40),
+              SizedBox(height: space.sm),
               Text(
                 presentation.title,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: context.texts.titleMedium,
               ),
-              const SizedBox(height: 8),
-              Text(
-                presentation.body,
-                textAlign: TextAlign.center,
-              ),
+              SizedBox(height: space.sm),
+              Text(presentation.body, textAlign: TextAlign.center),
               if (presentation.hint != null) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: space.sm),
                 Text(
                   presentation.hint!,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                  style: context.texts.bodyMedium
+                      ?.copyWith(color: context.colors.onSurfaceVariant),
                 ),
               ],
-              const SizedBox(height: 12),
+              SizedBox(height: space.md),
               FilledButton(
                 onPressed: controller.discardPlan,
                 child: const Text('Back to capture'),
@@ -362,9 +341,9 @@ class _PhaseHeader extends StatelessWidget {
     return Row(
       children: [
         _StepDot(index: 0, active: active, label: 'Capture'),
-        const SizedBox(width: 8),
+        SizedBox(width: context.space.sm),
         _StepDot(index: 1, active: active, label: 'Clarify'),
-        const SizedBox(width: 8),
+        SizedBox(width: context.space.sm),
         _StepDot(index: 2, active: active, label: 'Review'),
       ],
     );
@@ -384,16 +363,16 @@ class _StepDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = index <= active;
-    final theme = Theme.of(context);
-    final selectedColor = theme.colorScheme.primary;
-    final idleColor = theme.colorScheme.surfaceContainerHighest;
-    final textColor = selected ? selectedColor : theme.colorScheme.onSurface;
+    final space = context.space;
+    final selectedColor = context.colors.primary;
+    final idleColor = context.colors.surfaceContainerHighest;
+    final textColor = selected ? selectedColor : context.colors.onSurface;
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        padding: EdgeInsets.symmetric(vertical: space.sm, horizontal: space.md),
         decoration: BoxDecoration(
           color: selected ? selectedColor.withValues(alpha: 0.12) : idleColor,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: context.radius.pillAll,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -403,14 +382,11 @@ class _StepDot extends StatelessWidget {
               size: 16,
               color: textColor,
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: space.xs),
             Text(
               label,
-              style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
+              style: context.texts.labelMedium
+                  ?.copyWith(color: textColor, fontWeight: FontWeight.w600),
             ),
           ],
         ),
