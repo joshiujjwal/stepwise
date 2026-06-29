@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stepwise/coordinator/fake_llm_client.dart';
@@ -14,6 +16,15 @@ AppController _fresh({DateTime Function()? clock}) =>
 
 Widget _app(AppController c, Widget home) =>
     AppScope(controller: c, child: MaterialApp(home: home));
+
+/// Never completes, so the controller stays in the `thinking` phase — lets us
+/// inspect the planning progress UI.
+class _BlockingLlmClient implements LlmClient {
+  final _completer = Completer<String>();
+  @override
+  Future<String> complete({required String system, required String user}) =>
+      _completer.future;
+}
 
 void main() {
   testWidgets('Idea capture exposes tooltip and semantics guidance',
@@ -67,6 +78,45 @@ void main() {
 
     expect(c.ideas.length, 1);
     expect(find.text('Chunk TODO'), findsOneWidget); // back to capture
+  });
+
+  testWidgets('Thinking state shows a progress bar that advances over time',
+      (tester) async {
+    final c = AppController(coordinator: Coordinator(_BlockingLlmClient()));
+    await tester.pumpWidget(_app(c, const IdeaScreen()));
+
+    unawaited(c.submitGoal('plan a small dinner'));
+    await tester.pump();
+
+    expect(find.text('Thinking…'), findsOneWidget);
+    final bar = tester
+        .widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator));
+    final initial = bar.value ?? 0;
+
+    await tester.pump(const Duration(seconds: 3));
+    final later = tester
+            .widget<LinearProgressIndicator>(
+                find.byType(LinearProgressIndicator))
+            .value ??
+        0;
+
+    expect(later, greaterThan(initial));
+    expect(later, lessThan(1.0)); // never claims completion while waiting
+    expect(find.textContaining('elapsed'), findsOneWidget);
+
+    // Dispose the view so its periodic timer is cancelled before teardown.
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  test('estimatedThinkingProgress eases toward but never reaches 1', () {
+    const expected = Duration(seconds: 18);
+    expect(estimatedThinkingProgress(Duration.zero, expected), 0);
+    final mid = estimatedThinkingProgress(const Duration(seconds: 6), expected);
+    expect(mid, greaterThan(0));
+    expect(mid, lessThan(0.97));
+    final far =
+        estimatedThinkingProgress(const Duration(minutes: 10), expected);
+    expect(far, lessThanOrEqualTo(0.97));
   });
 
   testWidgets('Execute: duration filter narrows the list', (tester) async {

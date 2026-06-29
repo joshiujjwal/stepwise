@@ -15,4 +15,10 @@ class EngineScope extends InheritedNotifier<EngineController> {
     assert(scope != null, 'No EngineScope found in context');
     return scope!.notifier!;
   }
+
+  /// Like [of] but returns null instead of asserting when no [EngineScope] is in
+  /// the tree (e.g. hermetic widget tests that only provide an [AppScope]).
+  static EngineController? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<EngineScope>()?.notifier;
+  }
 }

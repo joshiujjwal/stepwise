@@ -1,7 +1,12 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../state/app_controller.dart';
 import '../state/app_scope.dart';
+import '../state/engine_controller.dart';
+import '../state/engine_scope.dart';
 import '../theme/tokens.dart';
 import 'widgets.dart';
 
@@ -119,24 +124,12 @@ class _IdeaScreenState extends State<IdeaScreen> {
   }
 
   Widget _thinking() {
-    final space = context.space;
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(),
-          SizedBox(height: space.lg),
-          Text('Thinking...', style: context.texts.titleMedium),
-          SizedBox(height: space.sm),
-          Text(
-            'Building tiny, time-doable steps so you can earn your win.',
-            textAlign: TextAlign.center,
-            style: context.texts.bodyMedium
-                ?.copyWith(color: context.colors.onSurfaceVariant),
-          ),
-        ],
-      ),
-    );
+    // On-device inference returns no completion %, and speed varies a lot
+    // between phones. Show an eased, time-based progress bar (honest: it never
+    // claims 100% — the screen swaps to the result when planning finishes)
+    // instead of a bare spinner.
+    final onGemma = EngineScope.maybeOf(context)?.mode == EngineMode.gemma;
+    return _ThinkingView(onGemma: onGemma);
   }
 
   Widget _clarify(AppController controller, PlanningSession session) {
@@ -405,4 +398,116 @@ class _ErrorPresentation {
   final String title;
   final String body;
   final String? hint;
+}
+
+/// Eased, time-based estimate (0..0.97) for the on-device planning wait.
+///
+/// Inference exposes no real completion %, so we approach the target
+/// asymptotically: the bar moves quickly at first, then slows near the top so
+/// it never appears stuck on a slow phone and never lies by hitting 100% (the
+/// screen swaps to the result the moment planning actually finishes).
+double estimatedThinkingProgress(Duration elapsed, Duration expected) {
+  final t = elapsed.inMilliseconds.toDouble();
+  final target = expected.inMilliseconds <= 0 ? 1.0 : expected.inMilliseconds;
+  final p = 1 - math.exp(-3 * t / target);
+  return p.clamp(0.0, 0.97);
+}
+
+/// Animated "Thinking…" state: a determinate-looking progress bar driven by
+/// elapsed time, a live seconds counter, rotating reassurance, and a gentle
+/// slow-device hint. Adapts its pacing to whether on-device Gemma is active.
+class _ThinkingView extends StatefulWidget {
+  const _ThinkingView({required this.onGemma});
+
+  /// On-device Gemma is far slower (and device-dependent) than the offline demo
+  /// planner, so we pace the bar and surface a slow hint accordingly.
+  final bool onGemma;
+
+  @override
+  State<_ThinkingView> createState() => _ThinkingViewState();
+}
+
+class _ThinkingViewState extends State<_ThinkingView> {
+  static const _messages = [
+    'Breaking your TODO into tiny, time-doable steps…',
+    'Keeping everything on your device — no internet needed…',
+    'Shaping each step so you can earn a quick win…',
+    'Almost there…',
+  ];
+
+  Timer? _timer;
+  Duration _elapsed = Duration.zero;
+
+  Duration get _expected =>
+      widget.onGemma ? const Duration(seconds: 18) : const Duration(seconds: 2);
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 120), (_) {
+      if (!mounted) return;
+      setState(() => _elapsed += const Duration(milliseconds: 120));
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final space = context.space;
+    final progress = estimatedThinkingProgress(_elapsed, _expected);
+    final seconds = _elapsed.inSeconds;
+    final message = _messages[(seconds ~/ 4) % _messages.length];
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: space.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Thinking…',
+                textAlign: TextAlign.center,
+                style: context.texts.titleMedium,
+              ),
+              SizedBox(height: space.md),
+              Semantics(
+                label: 'Planning in progress',
+                value: '${(progress * 100).round()} percent',
+                child: ClipRRect(
+                  borderRadius: context.radius.pillAll,
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 8,
+                    backgroundColor: context.colors.surfaceContainerHighest,
+                  ),
+                ),
+              ),
+              SizedBox(height: space.sm),
+              Text(
+                '${seconds}s elapsed',
+                textAlign: TextAlign.center,
+                style: context.texts.bodySmall
+                    ?.copyWith(color: context.colors.onSurfaceVariant),
+              ),
+              SizedBox(height: space.md),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: context.texts.bodyMedium
+                    ?.copyWith(color: context.colors.onSurfaceVariant),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -38,9 +38,14 @@ class GemmaLlmClient implements LlmClient {
     required String system,
     required String user,
   }) async {
-    // Deterministic sampling for consistent, schema-shaped planning output.
+    // Low-but-positive temperature for consistent, schema-shaped planning
+    // output. temperature: 0 breaks the LiteRT FFI sampler (it emits <pad>/
+    // random multilingual gibberish), so keep it >0 and pair with the
+    // recommended Gemma topK/topP.
     final session = await _model.createSession(
-      temperature: 0.0,
+      temperature: 0.3,
+      topK: 40,
+      topP: 0.9,
       systemInstruction: system,
     );
     try {

@@ -1,0 +1,4 @@
+Too slow for Iphone 14 pro max
+Show progress in thinking state -- maybe have background task palnner and notification
+
+Pickup up task can have eishhower matrix and due date thing
