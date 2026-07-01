@@ -73,14 +73,21 @@ Future<SqflitePersistenceStore?> _openPersistence() async {
 /// Configure on-device Gemma from compile-time defines so URLs/tokens/paths are
 /// never committed in source control.
 ///
-/// One source is required:
-///   --dart-define=GEMMA_MODEL_URL=https://.../gemma3-1b-it.task
+/// One source is required (checked in this order):
 ///   --dart-define=GEMMA_MODEL_FILE=/absolute/path/to/model.task
 ///   --dart-define=GEMMA_MODEL_ASSET=assets/models/model.task
+///   --dart-define=GEMMA_MODEL_CDN_URL=https://FRONT_DOOR_HOST/models/model.litertlm
+///       (Azure Front Door / CDN — always fetched tokenless; the edge injects
+///        any origin auth. Preferred for multi-region serving. Ignores
+///        GEMMA_MODEL_TOKEN / AZURE_BLOB_SAS_TOKEN so a stray SAS can't break
+///        edge caching.)
+///   --dart-define=GEMMA_MODEL_URL=https://.../gemma3-1b-it.task
+///       (direct origin, e.g. Blob/HF; may carry a token — see below)
 ///
 /// Optional:
 ///   --dart-define=GEMMA_MODEL_TOKEN=... (explicit auth token for a private model)
-///   --dart-define=AZURE_BLOB_SAS_TOKEN=... (Azure Blob SAS token)
+///   --dart-define=AZURE_BLOB_SAS_TOKEN=... (Azure Blob SAS; appended to the
+///       model URL as a query string, NOT sent as a Bearer header)
 ///   --dart-define=HF_TOKEN=hf_... (fallback for Hugging Face-hosted models)
 ///   --dart-define=GEMMA_MODEL_TYPE=gemmaIt|gemma4|deepSeek|qwen|qwen3|functionGemma|phi|general
 ///   --dart-define=GEMMA_MAX_TOKENS=2048
@@ -89,20 +96,25 @@ Future<SqflitePersistenceStore?> _openPersistence() async {
 ModelService? _gemmaService() {
   const modelFile = String.fromEnvironment('GEMMA_MODEL_FILE');
   const modelAsset = String.fromEnvironment('GEMMA_MODEL_ASSET');
+  const cdnUrl = String.fromEnvironment('GEMMA_MODEL_CDN_URL');
   const modelUrl = String.fromEnvironment('GEMMA_MODEL_URL');
-  if (modelFile.isEmpty && modelAsset.isEmpty && modelUrl.isEmpty) return null;
+  if (modelFile.isEmpty &&
+      modelAsset.isEmpty &&
+      cdnUrl.isEmpty &&
+      modelUrl.isEmpty) {
+    return null;
+  }
 
   final source = modelFile.isNotEmpty
       ? const GemmaModelSource.file(modelFile)
       : modelAsset.isNotEmpty
           ? const GemmaModelSource.asset(modelAsset)
-          : GemmaModelSource.network(
-              modelUrl,
-              token: resolveModelAccessToken(
-                modelToken: _optionalDefine('GEMMA_MODEL_TOKEN'),
-                azureBlobSasToken: _optionalDefine('AZURE_BLOB_SAS_TOKEN'),
-                huggingFaceToken: _huggingFaceTokenDefine(),
-              ),
+          : selectModelNetworkSource(
+              cdnUrl: cdnUrl.isEmpty ? null : cdnUrl,
+              modelUrl: modelUrl.isEmpty ? null : modelUrl,
+              modelToken: _optionalDefine('GEMMA_MODEL_TOKEN'),
+              azureBlobSasToken: _optionalDefine('AZURE_BLOB_SAS_TOKEN'),
+              huggingFaceToken: _huggingFaceTokenDefine(),
             );
 
   final modelType = _modelTypeFromName(_optionalDefine('GEMMA_MODEL_TYPE')) ??

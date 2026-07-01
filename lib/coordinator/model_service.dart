@@ -29,6 +29,80 @@ String? resolveModelAccessToken({
   return modelToken ?? azureBlobSasToken ?? huggingFaceToken;
 }
 
+/// Appends an Azure Blob **SAS** to [url] as a query string.
+///
+/// Azure authenticates SAS via the URL query (`?sv=...&sig=...`), NOT an
+/// `Authorization: Bearer` header — which is the only way flutter_gemma sends a
+/// `token`. Passing a SAS as a token therefore yields a 403
+/// `AuthenticationFailed` (commonly seen when the model blob lives in a
+/// different storage account/region). Appending it here fixes that.
+///
+/// Idempotent: returns [url] unchanged when [sas] is empty or the URL already
+/// carries a SAS signature (`sig=`). Tolerates a leading `?`/`&` on [sas].
+String appendSasToken(String url, String sas) {
+  final trimmed = sas.trim().replaceFirst(RegExp(r'^[?&]+'), '');
+  if (trimmed.isEmpty) return url;
+  if (RegExp(r'[?&]sig=').hasMatch(url)) return url;
+  final separator = url.contains('?') ? '&' : '?';
+  return '$url$separator$trimmed';
+}
+
+/// Builds a network [GemmaModelSource] with the correct auth mechanism.
+///
+/// Precedence:
+/// 1. An explicit [modelToken] is sent as a Bearer header (private HF/GCS).
+/// 2. An [azureBlobSasToken] is appended to the URL query string and sent
+///    with NO token, because Azure ignores Bearer auth for SAS.
+/// 3. A [huggingFaceToken] is sent as a Bearer header.
+GemmaModelSource buildModelNetworkSource({
+  required String url,
+  String? modelToken,
+  String? azureBlobSasToken,
+  String? huggingFaceToken,
+}) {
+  if (modelToken != null && modelToken.isNotEmpty) {
+    return GemmaModelSource.network(url, token: modelToken);
+  }
+  if (azureBlobSasToken != null && azureBlobSasToken.isNotEmpty) {
+    return GemmaModelSource.network(appendSasToken(url, azureBlobSasToken));
+  }
+  if (huggingFaceToken != null && huggingFaceToken.isNotEmpty) {
+    return GemmaModelSource.network(url, token: huggingFaceToken);
+  }
+  return GemmaModelSource.network(url);
+}
+
+/// Chooses the network model source from the configured URLs.
+///
+/// A [cdnUrl] (e.g. Azure Front Door) wins and is fetched **tokenless**: the
+/// edge handles origin auth via a Front Door rule or a public models container,
+/// so attaching a Bearer token or SAS would defeat edge caching and can 403.
+/// Any [modelToken] / [azureBlobSasToken] are deliberately ignored for a CDN
+/// URL. Otherwise falls back to a direct-origin [modelUrl] via
+/// [buildModelNetworkSource].
+///
+/// Throws [ArgumentError] if neither URL is provided.
+GemmaModelSource selectModelNetworkSource({
+  String? cdnUrl,
+  String? modelUrl,
+  String? modelToken,
+  String? azureBlobSasToken,
+  String? huggingFaceToken,
+}) {
+  if (cdnUrl != null && cdnUrl.isNotEmpty) {
+    return GemmaModelSource.network(cdnUrl);
+  }
+  if (modelUrl != null && modelUrl.isNotEmpty) {
+    return buildModelNetworkSource(
+      url: modelUrl,
+      modelToken: modelToken,
+      azureBlobSasToken: azureBlobSasToken,
+      huggingFaceToken: huggingFaceToken,
+    );
+  }
+  throw ArgumentError('No model URL configured (cdnUrl or modelUrl required).');
+}
+
 abstract interface class ModelService {
   /// A stable id used to check installation.
   String get modelId;

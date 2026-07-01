@@ -72,3 +72,6 @@ gemma.local.json
 
 # Local build secrets for build-script.bash (model URL, SAS, team id)
 .env.build
+
+# Local infra config for tool/infra/setup_frontdoor.sh (subscription, names)
+tool/infra/.env.infra

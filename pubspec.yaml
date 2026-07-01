@@ -1,7 +1,7 @@
 name: stepwise
 description: "On-device AI task coordinator — turns a goal into time-boxed, human-executed micro-tasks with approval-gated state and a focus timer. Gemma runs locally; nothing leaves your phone."
 publish_to: "none"
-version: 0.1.0+4
+version: 0.1.0+5
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

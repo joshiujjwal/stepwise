@@ -29,8 +29,11 @@
 #          "GEMMA_MAX_TOKENS": "2048"
 #        }
 #
-#   The model URL may be supplied either way:
-#     - GEMMA_MODEL_URL ........ full URL with the SAS query string already on it
+#   The model source may be supplied in any of these ways (first match wins):
+#     - GEMMA_MODEL_CDN_URL .... tokenless Azure Front Door / CDN URL (PREFERRED;
+#         edge-cached per region, no SAS in the IPA). Provision it with
+#         tool/infra/setup_frontdoor.sh.
+#     - GEMMA_MODEL_URL ........ full Blob URL with the SAS query string already on it
 #     - or GEMMA_MODEL_BASE_URL + AZURE_BLOB_SAS_TOKEN ... composed by this script
 #
 #   APPLE_TEAM_ID is required (defaults to the project's DEVELOPMENT_TEAM if set
@@ -39,8 +42,9 @@
 #   The resulting IPA is written to build/ios/ipa/*.ipa.
 #
 # SECURITY
-#   The SAS lands in the compiled binary, so anyone with the IPA can extract it.
-#   Use a short-lived, read-only, single-blob SAS and rotate it. Never commit
+#   With a SAS URL, the SAS lands in the compiled binary, so anyone with the IPA
+#   can extract it. Use a short-lived, read-only, single-blob SAS and rotate it,
+#   or prefer GEMMA_MODEL_CDN_URL which ships no secret at all. Never commit
 #   `.env.build` (it is git-ignored).
 
 set -euo pipefail
@@ -62,6 +66,7 @@ fi
 # ---- 1b. Fall back to gemma.local.json for any unset model settings ----
 if [[ -f gemma.local.json ]]; then
   json_get() { python3 -c "import json,sys; print(json.load(open('gemma.local.json')).get('$1',''))"; }
+  : "${GEMMA_MODEL_CDN_URL:=$(json_get GEMMA_MODEL_CDN_URL)}"
   : "${GEMMA_MODEL_URL:=$(json_get GEMMA_MODEL_URL)}"
   : "${GEMMA_MODEL_TYPE:=$(json_get GEMMA_MODEL_TYPE)}"
   : "${GEMMA_MAX_TOKENS:=$(json_get GEMMA_MAX_TOKENS)}"
@@ -74,12 +79,19 @@ if [[ -z "${APPLE_TEAM_ID:-}" ]]; then
     | sed -E 's/.*DEVELOPMENT_TEAM = ([A-Z0-9]+);.*/\1/' || true)"
 fi
 
-# ---- 2. Resolve the full signed model URL ----
+# ---- 2. Resolve the model source (CDN wins; else a signed Blob URL) ----
 GEMMA_MODEL_TYPE="${GEMMA_MODEL_TYPE:-gemmaIt}"
 
-if [[ -z "${GEMMA_MODEL_URL:-}" ]]; then
+# Front Door / CDN is preferred: a single, tokenless, edge-cached URL served
+# near every user. When set it takes precedence and NO SAS is compiled into the
+# IPA (the edge handles origin auth — see tool/infra/setup_frontdoor.sh and
+# lib/main.dart selectModelNetworkSource).
+USE_CDN=false
+if [[ -n "${GEMMA_MODEL_CDN_URL:-}" ]]; then
+  USE_CDN=true
+elif [[ -z "${GEMMA_MODEL_URL:-}" ]]; then
   # Compose from base URL + SAS query string when a full URL wasn't provided.
-  : "${GEMMA_MODEL_BASE_URL:?Provide GEMMA_MODEL_URL (full, with SAS) or GEMMA_MODEL_BASE_URL + AZURE_BLOB_SAS_TOKEN}"
+  : "${GEMMA_MODEL_BASE_URL:?Provide GEMMA_MODEL_CDN_URL, or GEMMA_MODEL_URL (full, with SAS), or GEMMA_MODEL_BASE_URL + AZURE_BLOB_SAS_TOKEN}"
   : "${AZURE_BLOB_SAS_TOKEN:?Provide AZURE_BLOB_SAS_TOKEN (SAS query string) when using GEMMA_MODEL_BASE_URL}"
   # Normalize the SAS: tolerate a leading '?' or '&' from copy/paste.
   SAS="${AZURE_BLOB_SAS_TOKEN#\?}"
@@ -93,8 +105,12 @@ fi
 
 : "${APPLE_TEAM_ID:?Set APPLE_TEAM_ID to your 10-character Apple Developer Team ID}"
 
-# Redacted preview so we never print the SAS signature to logs/CI.
-echo "==> Model URL: ${GEMMA_MODEL_URL%%\?*}?<sas-redacted>"
+if [[ "$USE_CDN" == true ]]; then
+  echo "==> Model source: CDN (tokenless) ${GEMMA_MODEL_CDN_URL}"
+else
+  # Redacted preview so we never print the SAS signature to logs/CI.
+  echo "==> Model URL: ${GEMMA_MODEL_URL%%\?*}?<sas-redacted>"
+fi
 echo "==> Model type: ${GEMMA_MODEL_TYPE}"
 echo "==> Apple Team: ${APPLE_TEAM_ID}"
 
@@ -113,10 +129,17 @@ flutter pub get
 
 echo "==> flutter build ipa (release)"
 # Optional tuning passes through if set in the environment / .env.build.
-DART_DEFINES=(
-  "--dart-define=GEMMA_MODEL_URL=${GEMMA_MODEL_URL}"
-  "--dart-define=GEMMA_MODEL_TYPE=${GEMMA_MODEL_TYPE}"
-)
+if [[ "$USE_CDN" == true ]]; then
+  DART_DEFINES=(
+    "--dart-define=GEMMA_MODEL_CDN_URL=${GEMMA_MODEL_CDN_URL}"
+    "--dart-define=GEMMA_MODEL_TYPE=${GEMMA_MODEL_TYPE}"
+  )
+else
+  DART_DEFINES=(
+    "--dart-define=GEMMA_MODEL_URL=${GEMMA_MODEL_URL}"
+    "--dart-define=GEMMA_MODEL_TYPE=${GEMMA_MODEL_TYPE}"
+  )
+fi
 [[ -n "${GEMMA_MAX_TOKENS:-}" ]] && \
   DART_DEFINES+=("--dart-define=GEMMA_MAX_TOKENS=${GEMMA_MAX_TOKENS}")
 [[ -n "${GEMMA_MAX_DOWNLOAD_RETRIES:-}" ]] && \
