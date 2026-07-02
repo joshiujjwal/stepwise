@@ -10,6 +10,23 @@ Deterministic output contract (MUST follow exactly):
    - "text": string
    - "evidence_type": one of checkbox|note|url|file
 5. No extra keys outside the schema.
+6. The top-level object MUST have an "action" key. The task list MUST be named
+   "micro_tasks" (NOT "tasks", NOT "plan", NOT "steps"). Each task is a FLAT
+   object with keys title, description, est_minutes, order_index,
+   acceptance_criteria - never nest a task inside another "task" key.
+7. Emit strictly valid JSON: balanced [] and {}, a comma between every array
+   item, and NO stray/duplicate arrays. Do not append extra arrays after a
+   value. Return ONE object only - never repeat or restart the object.
+''';
+
+/// A multi-task structural example. Anchors both the exact shape AND a
+/// realistic task count so small on-device models don't collapse to a single
+/// task. Deliberately generic - replace the content with real tasks for the
+/// user's goal; never copy these placeholder strings verbatim.
+const String _planStructureExample = '''
+Follow this structure exactly (replace every value with real content for the
+user's goal - do NOT copy these example strings):
+{"action":"propose_plan","idea_type":"errand","summary":"Optional short summary","micro_tasks":[{"title":"Gather what you need","description":"Collect the items and information required to start.","est_minutes":10,"order_index":1,"acceptance_criteria":[{"text":"Everything needed is in one place","evidence_type":"checkbox"}]},{"title":"Do the main step","description":"Complete the core action in one sitting.","est_minutes":30,"order_index":2,"acceptance_criteria":[{"text":"The main step is finished","evidence_type":"checkbox"}]},{"title":"Confirm and wrap up","description":"Verify the result and record proof.","est_minutes":15,"order_index":3,"acceptance_criteria":[{"text":"Result is verified","evidence_type":"note"}]}]}
 ''';
 
 const String planningSystemPrompt = '''
@@ -33,6 +50,7 @@ Behaviour:
    Start immediately with "{" and end with "}". Do not wrap in backticks or explain. Just the JSON.
 
 $_deterministicJsonContract
+$_planStructureExample
 ''';
 
 const String reTaskingSystemPrompt = '''
@@ -42,6 +60,7 @@ concrete verb-first titles, 1-3 acceptance_criteria, advisory order_index). Do N
 child. Output strict JSON with action "propose_plan".
 
 $_deterministicJsonContract
+$_planStructureExample
 ''';
 
 const String repairSystemPrompt = '''

@@ -72,3 +72,11 @@ Full spec: `docs/spec.md` (design decisions A–H are locked). Planner contract:
 - **Persistence is snapshot + write-through, and must never block startup.** Restore is guarded in
   `main.dart` and `load()` skips corrupt rows per-row, so a bad blob degrades to in-memory rather than
   crash-looping. New model fields need `toMap`/`fromMap` updates or they silently won't persist.
+- **On-device Gemma 3n E2B needs both a tolerant parser AND a multi-task prompt example.** The small
+  model drops the top-level `action`, names the list `tasks`, nests each task under a `task` key, or
+  emits criterion-shaped tasks — so `Coordinator._normalizeTaskItem`/`_firstTaskList` coerce those into
+  the canonical shape (`test/coordinator_test.dart`). The planner/retasking prompts embed a **3-task**
+  structural example (`_planStructureExample`) to stop the model collapsing to one task; the **repair**
+  prompt must NOT contain that literal example or the model parrots the placeholder strings verbatim.
+  Verify on-device with `flutter test integration_test/model_plan_test.dart -d <sim> --dart-define=GEMMA_MODEL_FILE=...`.
+

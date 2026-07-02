@@ -344,71 +344,35 @@ class Coordinator {
       return _coerceProposePlanObject(obj);
     }
 
-    final legacyPlan = obj['plan'];
-    if (legacyPlan is! List) return obj;
-
-    final tasks = <Map<String, dynamic>>[];
-    for (var i = 0; i < legacyPlan.length; i++) {
-      final item = legacyPlan[i];
-      if (item is! Map) continue;
-
-      final title = _asString(item['title']) ??
-          _asString(item['action']) ??
-          'Complete task ${i + 1}';
-      final description =
-          _asString(item['description']) ?? 'Complete this task step.';
-      final order = _asInt(item['order_index']) ?? (i + 1);
-      final estMinutes = _normalizeEstMinutes(item['est_minutes']);
-      final criteria = _normalizeCriteria(item['acceptance_criteria'], title);
-
-      tasks.add({
-        'title': title,
-        'description': description,
-        'est_minutes': estMinutes,
-        'order_index': order,
-        'acceptance_criteria': criteria,
-      });
+    // Tolerate on-device models that drop the top-level "action" but still
+    // emit a task list under a known alias (micro_tasks/plan/tasks/steps).
+    // Small models (e.g. Gemma 3n E2B) frequently do this, so infer a
+    // propose_plan rather than failing validation on a missing action.
+    if (_firstTaskList(obj) != null) {
+      return _coerceProposePlanObject(obj);
     }
 
-    if (tasks.isEmpty) return obj;
-    final summary = _asString(obj['summary']);
-    return {
-      'action': 'propose_plan',
-      'idea_type': _normalizeIdeaType(obj['idea_type'] ?? obj['type']),
-      if (summary != null) 'summary': summary,
-      'micro_tasks': tasks,
-    };
+    return obj;
+  }
+
+  /// The first list found under any known task-list alias, or null.
+  static List<Object?>? _firstTaskList(Map<String, dynamic> obj) {
+    for (final key in const ['micro_tasks', 'plan', 'tasks', 'steps']) {
+      final value = obj[key];
+      if (value is List && value.isNotEmpty) return value;
+    }
+    return null;
   }
 
   static Map<String, dynamic> _coerceProposePlanObject(
     Map<String, dynamic> obj,
   ) {
-    final rawTasks = obj['micro_tasks'] is List
-        ? obj['micro_tasks'] as List
-        : obj['plan'] is List
-            ? obj['plan'] as List
-            : const <Object?>[];
+    final rawTasks = _firstTaskList(obj) ?? const <Object?>[];
 
     final normalized = <Map<String, dynamic>>[];
     for (var i = 0; i < rawTasks.length; i++) {
-      final item = rawTasks[i];
-      if (item is! Map) continue;
-
-      normalized.add({
-        'title': _asString(item['title']) ??
-            _asString(item['action']) ??
-            'Complete task ${i + 1}',
-        'description':
-            _asString(item['description']) ?? 'Complete this task step.',
-        'est_minutes': _normalizeEstMinutes(item['est_minutes']),
-        'order_index': _asInt(item['order_index']) ?? (i + 1),
-        'acceptance_criteria': _normalizeCriteria(
-          item['acceptance_criteria'] ?? item['criteria'],
-          _asString(item['title']) ??
-              _asString(item['action']) ??
-              'Task ${i + 1}',
-        ),
-      });
+      final task = _normalizeTaskItem(rawTasks[i], i);
+      if (task != null) normalized.add(task);
     }
 
     normalized.sort((a, b) =>
@@ -428,6 +392,62 @@ class Coordinator {
       if (summary != null) 'summary': summary,
       'micro_tasks': canonicalTasks,
     };
+  }
+
+  /// Coerces a single (possibly malformed) task entry into the canonical task
+  /// shape. Tolerates the drift seen from on-device models:
+  /// - the payload nested under a `task` key,
+  /// - a missing `title` (derived from the description),
+  /// - a criterion-shaped item (`{text, evidence_type}`) used as a task.
+  static Map<String, dynamic>? _normalizeTaskItem(Object? item, int index) {
+    if (item is! Map) return null;
+
+    // Unwrap `{order_index, task: {...}}` while keeping the outer order_index.
+    final inner = item['task'];
+    final fields = inner is Map ? inner : item;
+
+    final title = _asString(fields['title']) ??
+        _asString(item['title']) ??
+        _asString(fields['action']) ??
+        _asString(item['action']) ??
+        _deriveTitle(_asString(fields['description'])) ??
+        // Criterion-shaped item: use its text as the task title.
+        _deriveTitle(_asString(fields['text']) ?? _asString(item['text'])) ??
+        'Complete task ${index + 1}';
+
+    final description = _asString(fields['description']) ??
+        _asString(item['description']) ??
+        title;
+
+    final order =
+        _asInt(item['order_index']) ?? _asInt(fields['order_index']) ?? (index + 1);
+    final estMinutes =
+        _normalizeEstMinutes(fields['est_minutes'] ?? item['est_minutes']);
+    final criteria = _normalizeCriteria(
+      fields['acceptance_criteria'] ?? fields['criteria'] ?? item['acceptance_criteria'],
+      title,
+    );
+
+    return {
+      'title': title,
+      'description': description,
+      'est_minutes': estMinutes,
+      'order_index': order,
+      'acceptance_criteria': criteria,
+    };
+  }
+
+  /// Derives a valid 6-80 char task title from free text (e.g. a description),
+  /// trimming to the first sentence/clause. Returns null when [raw] is empty.
+  static String? _deriveTitle(String? raw) {
+    final text = _asString(raw);
+    if (text == null) return null;
+    var title = text.split(RegExp(r'[.!?\n]')).first.trim();
+    if (title.isEmpty) title = text.trim();
+    if (title.length > 80) title = '${title.substring(0, 77).trimRight()}...';
+    if (title.length < 6) title = text.trim();
+    if (title.length > 80) title = title.substring(0, 80).trimRight();
+    return title.length < 6 ? null : title;
   }
 
   static String? _asString(Object? value) {

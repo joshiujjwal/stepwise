@@ -298,4 +298,66 @@ Thanks!
       expect(envelope['errors'], isA<List<dynamic>>());
     }
   });
+
+  // Real on-device Gemma 3n E2B output: no top-level "action", a "tasks" list
+  // instead of "micro_tasks", and each task rendered in the acceptance-criterion
+  // shape ({text, evidence_type}). Should coerce to a valid plan without repair.
+  test('normalizes actionless "tasks" list with criterion-shaped items',
+      () async {
+    const gemmaShape =
+        '{"idea_type": "trip", "tasks": ['
+        '{"text": "Book flights", "evidence_type": "checkbox"}, '
+        '{"text": "Reserve hotel", "evidence_type": "checkbox"}, '
+        '{"text": "Pack essentials", "evidence_type": "checkbox"}]}';
+
+    final llm = FakeLlmClient(scripted: [gemmaShape]);
+    final coordinator = Coordinator(llm);
+
+    final response = await coordinator.plan(goal: 'plan a weekend trip');
+    final plan = response as PlanResponse;
+
+    expect(llm.calls.length, 1, reason: 'should not need a repair round');
+    expect(plan.ideaType, 'trip');
+    expect(plan.tasks.map((t) => t.title).toList(),
+        ['Book flights', 'Reserve hotel', 'Pack essentials']);
+    expect(plan.tasks.map((t) => t.orderIndex).toList(), [1, 2, 3]);
+    for (final t in plan.tasks) {
+      expect(t.acceptanceCriteria, isNotEmpty);
+    }
+  });
+
+  // Real on-device Gemma 3n E2B output: no "action", a "tasks" list, and each
+  // task nested under a "task" key with the title missing (only a description).
+  test('normalizes actionless "tasks" list with nested "task" objects',
+      () async {
+    const gemmaShape =
+        '{"idea_type": "errand", "tasks": ['
+        '{"order_index": 1, "task": {'
+        '"description": "Make a grocery list based on your needs.", '
+        '"acceptance_criteria": [{"text": "List includes all items", "evidence_type": "checkbox"}], '
+        '"est_minutes": 20}}, '
+        '{"order_index": 2, "task": {'
+        '"description": "Check your pantry for existing supplies.", '
+        '"acceptance_criteria": [{"text": "Pantry checked", "evidence_type": "checkbox"}], '
+        '"est_minutes": 10}}, '
+        '{"order_index": 3, "task": {'
+        '"description": "Drive to the store and buy the items.", '
+        '"acceptance_criteria": [{"text": "All items purchased", "evidence_type": "checkbox"}], '
+        '"est_minutes": 45}}]}';
+
+    final llm = FakeLlmClient(scripted: [gemmaShape]);
+    final coordinator = Coordinator(llm);
+
+    final response = await coordinator.plan(goal: 'buy groceries');
+    final plan = response as PlanResponse;
+
+    expect(llm.calls.length, 1, reason: 'should not need a repair round');
+    expect(plan.ideaType, 'errand');
+    expect(plan.tasks.length, 3);
+    expect(plan.tasks[0].description, 'Make a grocery list based on your needs.');
+    expect(plan.tasks[0].estMinutes, 20);
+    expect(plan.tasks[0].title.trim(), isNotEmpty);
+    expect(plan.tasks[0].acceptanceCriteria.first.text, 'List includes all items');
+    expect(plan.tasks.map((t) => t.orderIndex).toList(), [1, 2, 3]);
+  });
 }
