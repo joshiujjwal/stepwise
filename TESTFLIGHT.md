@@ -51,11 +51,20 @@ GitHub → **Actions → iOS TestFlight → Run workflow** (optionally type a "W
 test" note). The workflow:
 1. `flutter pub get` and **`flutter test`** (release is gated on green tests),
 2. imports your cert + profile, fills the team id into `ExportOptions.plist`,
-3. `flutter build ipa`,
+3. `flutter build ipa` (injects the **on-device Gemma** model config so the app
+   downloads the model from the public CDN on first launch — see note below),
 4. `bundle exec fastlane ios upload` → TestFlight.
 
 When processing finishes (a few minutes), the build appears in App Store Connect →
 TestFlight. Add yourself as an internal tester to install via the TestFlight app.
+
+> **Model config.** Without a `GEMMA_MODEL_*` dart-define the app ships in offline
+> **demo mode** (no on-device Gemma). CI passes the public Front Door CDN URL via
+> `--dart-define=GEMMA_MODEL_CDN_URL=…` (fetched tokenless — **no SAS secret in the
+> IPA**), plus `GEMMA_MODEL_TYPE=gemmaIt` and `GEMMA_MAX_TOKENS=2048`. Override the
+> URL with a repo/environment variable `GEMMA_MODEL_CDN_URL`. The model (~3.6 GB) is
+> downloaded on first launch. Locally, `--dart-define-from-file=gemma.local.json`
+> supplies the same values.
 
 ---
 
@@ -63,7 +72,9 @@ TestFlight. Add yourself as an internal tester to install via the TestFlight app
 ```bash
 cd ios && bundle install
 # export the same env vars as the secrets above, then:
-cd .. && flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+cd .. && flutter build ipa --release \
+  --dart-define-from-file=gemma.local.json \
+  --export-options-plist=ios/ExportOptions.plist
 cd ios && bundle exec fastlane ios upload
 # sanity check auth only (no build): bundle exec fastlane ios check_auth
 ```

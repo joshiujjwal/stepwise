@@ -68,8 +68,15 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :teamID $APPLE_TEAM_ID" ios/ExportOptions.plist
 
       - name: Build IPA
+        env:
+          # Public Azure Front Door URL (fetched tokenless — no SAS in the IPA).
+          # Override by setting a repo/environment variable GEMMA_MODEL_CDN_URL.
+          GEMMA_MODEL_CDN_URL: ${{ vars.GEMMA_MODEL_CDN_URL || 'https://stepwise-cubsdpc8eqf7cqd5.z03.azurefd.net/models/gemma-3n-E2B-it-int4.litertlm' }}
         run: |
           flutter build ipa --release \
+            --dart-define=GEMMA_MODEL_CDN_URL="$GEMMA_MODEL_CDN_URL" \
+            --dart-define=GEMMA_MODEL_TYPE=gemmaIt \
+            --dart-define=GEMMA_MAX_TOKENS=2048 \
             --export-options-plist=ios/ExportOptions.plist
 
       - name: Upload to TestFlight (fastlane)
