@@ -120,6 +120,7 @@ class _IdeaScreenState extends State<IdeaScreen> {
               controller: _context,
               minLines: 2,
               maxLines: 4,
+              maxLength: 280,
               decoration: const InputDecoration(
                 labelText: 'Where do you want to start? (optional)',
                 hintText:
@@ -341,6 +342,8 @@ class _IdeaScreenState extends State<IdeaScreen> {
               child: FilledButton(
                 onPressed: () {
                   controller.confirmPlan();
+                  _goal.clear();
+                  _context.clear();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
@@ -354,7 +357,11 @@ class _IdeaScreenState extends State<IdeaScreen> {
             ),
             SizedBox(width: space.md),
             OutlinedButton(
-              onPressed: controller.discardPlan,
+              onPressed: () {
+                controller.discardPlan();
+                _goal.clear();
+                _context.clear();
+              },
               child: const Text('Start over'),
             ),
           ],

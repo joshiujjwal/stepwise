@@ -80,6 +80,32 @@ void main() {
     expect(find.text('Chunk TODO'), findsOneWidget); // back to capture
   });
 
+  testWidgets('confirming a plan clears the goal and starting-context fields',
+      (tester) async {
+    final c = _fresh();
+    await tester.pumpWidget(_app(c, const IdeaScreen()));
+
+    final fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), 'practice pitch');
+    await tester.enterText(fields.at(1), 'Slides are done, rehearse delivery.');
+    await tester.tap(find.text('Chunk TODO'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Confirm plan'));
+    await tester.pumpAndSettle();
+
+    // Back on the capture screen both inputs must be empty so the next TODO
+    // does not silently inherit the previous starting context (issue #9).
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(0)).controller!.text,
+      isEmpty,
+    );
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(1)).controller!.text,
+      isEmpty,
+    );
+  });
+
   testWidgets('Thinking state shows a progress bar that advances over time',
       (tester) async {
     final c = AppController(coordinator: Coordinator(_BlockingLlmClient()));
