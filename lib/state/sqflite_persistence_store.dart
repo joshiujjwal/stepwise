@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../models/models.dart';
 import 'persistence_store.dart';
+import 'planning_job.dart';
 
 /// Durable [PersistenceStore] backed by sqflite. Each entity is stored as a
 /// JSON blob keyed by its id, which keeps the schema stable as models evolve
@@ -16,7 +17,7 @@ class SqflitePersistenceStore implements PersistenceStore {
 
   final Database _db;
 
-  static const _dbVersion = 1;
+  static const _dbVersion = 2;
 
   /// Open (or create) the database. [factory] and [path] are injectable so
   /// tests can run against an ffi/in-memory database; production uses the
@@ -34,6 +35,7 @@ class SqflitePersistenceStore implements PersistenceStore {
         version: _dbVersion,
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: (db, _) => _createSchema(db),
+        onUpgrade: _migrate,
       ),
     );
     return SqflitePersistenceStore(db);
@@ -52,26 +54,39 @@ class SqflitePersistenceStore implements PersistenceStore {
       'id TEXT UNIQUE NOT NULL, '
       'data TEXT NOT NULL)',
     );
+    await _createJobsTable(db);
   }
+
+  // Additive migrations only: each version's delta is applied in order so an
+  // existing install keeps its ideas/tasks/events untouched.
+  static Future<void> _migrate(Database db, int from, int to) async {
+    if (from < 2) await _createJobsTable(db);
+  }
+
+  static Future<void> _createJobsTable(Database db) => db.execute(
+        'CREATE TABLE jobs (id TEXT PRIMARY KEY, data TEXT NOT NULL)',
+      );
 
   @override
   Future<PersistedState> load() async {
     final ideaRows = await _db.query('ideas');
     final taskRows = await _db.query('tasks');
     final eventRows = await _db.query('events', orderBy: 'seq ASC');
+    final jobRows = await _db.query('jobs');
     // Scan raw id columns of every row — including ones that fail to decode —
     // so the controller's id counter advances past a corrupt-but-present row
     // and can't later regenerate a colliding id (which `ignore` would silently
     // drop for events). Task rows also contain higher criterion ids inside the
     // blob; those are covered by `appendEvent` using `replace` as a safety net.
     final rawIds = [
-      for (final r in [...ideaRows, ...taskRows, ...eventRows])
+      for (final r in [...ideaRows, ...taskRows, ...eventRows, ...jobRows])
         if (r['id'] is String) r['id']! as String,
     ];
     return PersistedState(
       ideas: _decodeRows(ideaRows, 'idea', Idea.fromMap),
       tasks: _decodeRows(taskRows, 'task', MicroTask.fromMap),
       events: _decodeRows(eventRows, 'event', EventRecord.fromMap),
+      jobs: _decodeRows(jobRows, 'job', PlanningJob.fromMap),
       maxIdSeq: maxIdSeqOf(rawIds),
     );
   }
@@ -120,10 +135,22 @@ class SqflitePersistenceStore implements PersistenceStore {
       );
 
   @override
+  Future<void> upsertJob(PlanningJob job) => _db.insert(
+        'jobs',
+        {'id': job.id, 'data': jsonEncode(job.toMap())},
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+  @override
+  Future<void> deleteJob(String jobId) =>
+      _db.delete('jobs', where: 'id = ?', whereArgs: [jobId]);
+
+  @override
   Future<void> clear() async {
     await _db.delete('events');
     await _db.delete('tasks');
     await _db.delete('ideas');
+    await _db.delete('jobs');
   }
 
   Future<void> close() => _db.close();

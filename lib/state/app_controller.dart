@@ -7,6 +7,7 @@ import '../coordinator/todo_chunking_agent.dart';
 import '../models/models.dart';
 import 'event_store.dart';
 import 'persistence_store.dart';
+import 'planning_job.dart';
 import 'projections.dart';
 import 'task_state_machine.dart';
 
@@ -114,6 +115,9 @@ class AppController extends ChangeNotifier {
     _tasks
       ..clear()
       ..addAll(snapshot.tasks);
+    _jobs
+      ..clear()
+      ..addAll(snapshot.jobs);
     for (final event in snapshot.events) {
       this.store.append(event);
     }
@@ -134,6 +138,7 @@ class AppController extends ChangeNotifier {
           for (final c in task.acceptanceCriteria) c.id,
         ],
         for (final event in snapshot.events) event.id,
+        for (final job in snapshot.jobs) job.id,
       ],
       floor: snapshot.maxIdSeq > _seq - 1 ? snapshot.maxIdSeq : _seq - 1,
     );
@@ -142,6 +147,7 @@ class AppController extends ChangeNotifier {
 
   final List<Idea> _ideas = [];
   final List<MicroTask> _tasks = [];
+  final List<PlanningJob> _jobs = [];
   final Map<String, DateTime> _timerRunning = {};
   Timer? _timerTicker;
   PlanningSession? _session;
@@ -285,6 +291,150 @@ class AppController extends ChangeNotifier {
   void discardPlan() {
     _session = null;
     notifyListeners();
+  }
+
+  // ---- background planning jobs (spec §11, background variant) ----
+  //
+  // Unlike the interactive [_session] flow, a job runs the coordinator off the
+  // UI thread and waits in a review inbox until the user submits or discards it.
+  // On-device Gemma is single-threaded, so queued jobs run one at a time.
+
+  /// All background jobs, newest last.
+  List<PlanningJob> get jobs => List.unmodifiable(_jobs);
+
+  /// Jobs whose plan is ready to review and submit.
+  List<PlanningJob> get readyJobs =>
+      _jobs.where((j) => j.isReady).toList(growable: false);
+
+  PlanningJob? jobById(String id) {
+    final i = _jobIndex(id);
+    return i == -1 ? null : _jobs[i];
+  }
+
+  /// Serializes planner runs so on-device Gemma never sees concurrent requests.
+  Future<void> _jobQueue = Future<void>.value();
+
+  /// Await all queued/in-flight background planning. For tests and a clean
+  /// shutdown; UI code observes status changes via [notifyListeners] instead.
+  Future<void> flushPlanningJobs() => _jobQueue;
+
+  /// Kick off decomposition of [goal] in the background. Returns the new job id
+  /// immediately; the plan becomes available via [jobById]/[readyJobs] once the
+  /// coordinator finishes.
+  String startPlanningJob(String goal) {
+    final id = _newId();
+    final job = PlanningJob(
+      id: id,
+      goal: goal,
+      status: PlanningJobStatus.thinking,
+      createdAt: _now(),
+    );
+    _jobs.add(job);
+    _enqueue((p) => p.upsertJob(job));
+    notifyListeners();
+    _scheduleJob(id, goal, 'none');
+    return id;
+  }
+
+  /// Answer a clarifying job; re-runs planning in the background with [answers].
+  void answerJob(String id, String answers) {
+    final i = _jobIndex(id);
+    if (i == -1) return;
+    final goal = _jobs[i].goal;
+    _updateJob(
+        id,
+        (j) => j
+            .copyWith(status: PlanningJobStatus.thinking, questions: const []));
+    _scheduleJob(id, goal, answers.trim().isEmpty ? 'none' : answers.trim());
+  }
+
+  /// Replace a ready job's plan with an edited one (edit-before-submit).
+  void updateJobProposal(String id, PlanResponse proposal) {
+    _updateJob(id,
+        (j) => j.copyWith(status: PlanningJobStatus.ready, proposal: proposal));
+  }
+
+  /// Persist a ready job's plan as an idea + micro-tasks, then remove the job.
+  Idea submitJob(String id) {
+    final i = _jobIndex(id);
+    if (i == -1) throw StateError('no job $id');
+    final proposal = _jobs[i].proposal;
+    if (proposal == null) {
+      throw StateError('job $id has no proposal to submit');
+    }
+    final goal = _jobs[i].goal;
+    final idea = Idea(
+      id: _newId(),
+      title: goal,
+      rawInput: goal,
+      type: _typeFrom(proposal.ideaType),
+      status: IdeaStatus.active,
+      createdAt: _now(),
+    );
+    _ideas.add(idea);
+    _enqueue((p) => p.upsertIdea(idea));
+    _append(idea.id, EventTypes.ideaCreated);
+    _append(idea.id, EventTypes.planConfirmed,
+        payload: {'taskCount': proposal.tasks.length});
+    for (final pt in proposal.tasks) {
+      final task = _materialize(idea.id, null, pt);
+      _tasks.add(task);
+      _enqueue((p) => p.upsertTask(task));
+    }
+    _jobs.removeAt(i);
+    _enqueue((p) => p.deleteJob(id));
+    notifyListeners();
+    return idea;
+  }
+
+  /// Drop a job without persisting anything.
+  void discardJob(String id) {
+    final i = _jobIndex(id);
+    if (i == -1) return;
+    _jobs.removeAt(i);
+    _enqueue((p) => p.deleteJob(id));
+    notifyListeners();
+  }
+
+  int _jobIndex(String id) => _jobs.indexWhere((j) => j.id == id);
+
+  void _updateJob(String id, PlanningJob Function(PlanningJob) transform) {
+    final i = _jobIndex(id);
+    if (i == -1) return;
+    _jobs[i] = transform(_jobs[i]);
+    _enqueue((p) => p.upsertJob(_jobs[i]));
+    notifyListeners();
+  }
+
+  void _scheduleJob(String id, String goal, String answers) {
+    _jobQueue = _jobQueue.then((_) => _runJob(id, goal, answers));
+  }
+
+  Future<void> _runJob(String id, String goal, String answers) async {
+    // The job may have been discarded while queued behind another run.
+    if (_jobIndex(id) == -1) return;
+    try {
+      final resp = await coordinator.plan(goal: goal, priorAnswers: answers);
+      _updateJob(
+        id,
+        (j) => switch (resp) {
+          ClarifyResponse(:final questions) => j.copyWith(
+              status: PlanningJobStatus.clarifying, questions: questions),
+          PlanResponse() =>
+            j.copyWith(status: PlanningJobStatus.ready, proposal: resp),
+        },
+      );
+    } on CoordinatorException catch (e) {
+      _updateJob(
+          id,
+          (j) => j.copyWith(
+              status: PlanningJobStatus.error, error: e.errors.join('; ')));
+    } catch (e) {
+      _updateJob(
+          id,
+          (j) =>
+              j.copyWith(status: PlanningJobStatus.error, error: e.toString()));
+    }
   }
 
   // ---- task lifecycle (spec §2) ----

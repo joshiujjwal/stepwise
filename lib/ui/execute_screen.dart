@@ -184,10 +184,26 @@ class _ExecuteScreenState extends State<ExecuteScreen> {
             shape: const Border(),
             collapsedShape: const Border(),
             title: Text(group.idea.title, style: context.texts.titleMedium),
-            subtitle: Text(
-              '${group.idea.type.name} · ${group.doneCount}/${group.totalCount} tasks done',
-              style: context.texts.bodySmall
-                  ?.copyWith(color: context.colors.onSurfaceVariant),
+            subtitle: Padding(
+              padding: EdgeInsets.only(top: space.xs),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${group.idea.type.name} · ${group.doneCount}/${group.totalCount} tasks done',
+                    style: context.texts.bodySmall
+                        ?.copyWith(color: context.colors.onSurfaceVariant),
+                  ),
+                  SizedBox(height: space.xs),
+                  ProgressBar(
+                    value: group.totalCount == 0
+                        ? 0
+                        : group.doneCount / group.totalCount,
+                    height: 6,
+                    semanticLabel: '${group.idea.title} progress',
+                  ),
+                ],
+              ),
             ),
             children: [
               Padding(

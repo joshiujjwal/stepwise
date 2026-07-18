@@ -230,25 +230,30 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
+    final readyCount = AppScope.of(context).readyJobs.length;
     return Scaffold(
       body: IndexedStack(index: _index, children: _tabs),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.lightbulb_outline),
+            icon: Badge(
+              isLabelVisible: readyCount > 0,
+              label: Text('$readyCount'),
+              child: const Icon(Icons.lightbulb_outline),
+            ),
             label: 'Idea',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.check_circle_outline),
             label: 'Execute',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.insights_outlined),
             label: 'Trends',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             label: 'Settings',
           ),

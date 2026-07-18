@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:stepwise/coordinator/planner.dart';
 import 'package:stepwise/models/models.dart';
+import 'package:stepwise/state/planning_job.dart';
 import 'package:stepwise/state/sqflite_persistence_store.dart';
 
 void main() {
@@ -181,5 +183,41 @@ void main() {
 
     final snapshot = await store.load();
     expect(snapshot.events.single.type, 'task_started');
+  });
+
+  test('round-trips planning jobs and deletes them', () async {
+    final store = await openStore();
+
+    final job = PlanningJob(
+      id: 'id5',
+      goal: 'plan my launch',
+      status: PlanningJobStatus.ready,
+      createdAt: DateTime.utc(2026, 6, 21, 8),
+      proposal: const PlanResponse(
+        ideaType: 'project',
+        tasks: [
+          PlannedTask(
+            title: 'Book venue',
+            description: 'Reserve the hall',
+            estMinutes: 20,
+            orderIndex: 0,
+            acceptanceCriteria: [
+              PlannedCriterion(text: 'confirmed', evidenceType: 'checkbox'),
+            ],
+          ),
+        ],
+      ),
+    );
+    await store.upsertJob(job);
+
+    var snapshot = await store.load();
+    expect(snapshot.jobs.single.id, 'id5');
+    expect(snapshot.jobs.single.proposal!.tasks.single.title, 'Book venue');
+    // Job ids participate in id-collision avoidance.
+    expect(snapshot.maxIdSeq, greaterThanOrEqualTo(5));
+
+    await store.deleteJob('id5');
+    snapshot = await store.load();
+    expect(snapshot.jobs, isEmpty);
   });
 }

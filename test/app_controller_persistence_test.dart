@@ -5,6 +5,7 @@ import 'package:stepwise/models/models.dart';
 import 'package:stepwise/state/app_controller.dart';
 import 'package:stepwise/state/event_store.dart';
 import 'package:stepwise/state/persistence_store.dart';
+import 'package:stepwise/state/planning_job.dart';
 
 AppController _controller(PersistenceStore store) => AppController(
       coordinator: Coordinator(FakeLlmClient()),
@@ -113,6 +114,12 @@ class _MaxIdSeqOnlyStore implements PersistenceStore {
 
   @override
   Future<void> appendEvent(EventRecord event) async {}
+
+  @override
+  Future<void> upsertJob(PlanningJob job) async {}
+
+  @override
+  Future<void> deleteJob(String jobId) async {}
 
   @override
   Future<void> clear() async {}

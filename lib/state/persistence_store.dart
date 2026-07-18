@@ -1,12 +1,15 @@
 import '../models/models.dart';
+import 'planning_job.dart';
 
 /// A point-in-time snapshot of everything restored on startup: entity state
-/// (ideas + tasks) plus the full event log that powers trends/history.
+/// (ideas + tasks) plus the full event log that powers trends/history, plus any
+/// pending/ready background planning jobs awaiting review.
 class PersistedState {
   const PersistedState({
     this.ideas = const [],
     this.tasks = const [],
     this.events = const [],
+    this.jobs = const [],
     this.maxIdSeq = 0,
   });
 
@@ -14,13 +17,17 @@ class PersistedState {
   final List<MicroTask> tasks;
   final List<EventRecord> events;
 
+  /// Background planning jobs restored across restart (spec §11, background).
+  final List<PlanningJob> jobs;
+
   /// Highest numeric suffix of any `idN`-form id physically present in storage,
   /// *including rows that failed to decode and were skipped*. The controller
   /// advances its id counter past this so a regenerated id can never collide
   /// with a corrupt-but-present row. 0 when nothing `idN`-shaped is stored.
   final int maxIdSeq;
 
-  bool get isEmpty => ideas.isEmpty && tasks.isEmpty && events.isEmpty;
+  bool get isEmpty =>
+      ideas.isEmpty && tasks.isEmpty && events.isEmpty && jobs.isEmpty;
 }
 
 /// Highest numeric suffix among `idN`-form ids, or [floor] when none exceed it.
@@ -52,6 +59,12 @@ abstract interface class PersistenceStore {
 
   Future<void> appendEvent(EventRecord event);
 
+  /// Insert or update a background planning job.
+  Future<void> upsertJob(PlanningJob job);
+
+  /// Remove a background planning job (after submit or discard).
+  Future<void> deleteJob(String jobId);
+
   /// Wipe all persisted data (used by tests and a future "reset" affordance).
   Future<void> clear();
 }
@@ -62,12 +75,14 @@ class InMemoryPersistenceStore implements PersistenceStore {
   final Map<String, Idea> _ideas = {};
   final Map<String, MicroTask> _tasks = {};
   final List<EventRecord> _events = [];
+  final Map<String, PlanningJob> _jobs = {};
 
   @override
   Future<PersistedState> load() async => PersistedState(
         ideas: _ideas.values.toList(growable: false),
         tasks: _tasks.values.toList(growable: false),
         events: List.unmodifiable(_events),
+        jobs: _jobs.values.toList(growable: false),
         maxIdSeq: maxIdSeqOf([
           ..._ideas.keys,
           for (final t in _tasks.values) ...[
@@ -75,6 +90,7 @@ class InMemoryPersistenceStore implements PersistenceStore {
             for (final c in t.acceptanceCriteria) c.id,
           ],
           for (final e in _events) e.id,
+          ..._jobs.keys,
         ]),
       );
 
@@ -88,9 +104,16 @@ class InMemoryPersistenceStore implements PersistenceStore {
   Future<void> appendEvent(EventRecord event) async => _events.add(event);
 
   @override
+  Future<void> upsertJob(PlanningJob job) async => _jobs[job.id] = job;
+
+  @override
+  Future<void> deleteJob(String jobId) async => _jobs.remove(jobId);
+
+  @override
   Future<void> clear() async {
     _ideas.clear();
     _tasks.clear();
     _events.clear();
+    _jobs.clear();
   }
 }

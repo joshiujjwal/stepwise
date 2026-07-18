@@ -2,3 +2,15 @@ Too slow for Iphone 14 pro max
 Show progress in thinking state -- maybe have background task palnner and notification
 
 Pickup up task can have eishhower matrix and due date thing
+
+Sharing and gamification
+
+o idea ye hai ki bade tasks ko chunk karke model tumhe dega. Then you can collaborate on multiple people and you are also trying gamify the task completion 
+
+Mac app with with similar way? ALong with 
+
+Utsav Patel:
+	Ek aur suggestion, vo app me jab tasks dale to thinking me kafi time ja raha hai. To maybe queue me dal sakte hai
+
+Ujjwal Joshi:
+	Haa wohi push krna hai .. background .. kyuki local me time.. maybe thinking .. Mac app bhi ho to it can sync and Mac me faster hoga 

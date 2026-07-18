@@ -7,7 +7,9 @@ import '../state/app_controller.dart';
 import '../state/app_scope.dart';
 import '../state/engine_controller.dart';
 import '../state/engine_scope.dart';
+import '../state/planning_job.dart';
 import '../theme/tokens.dart';
+import 'review_plan_screen.dart';
 import 'widgets.dart';
 
 /// Idea tab - conversational capture (clarify -> streamed plan -> Confirm/Revise).
@@ -114,12 +116,96 @@ class _IdeaScreenState extends State<IdeaScreen> {
           ),
         ),
         SizedBox(height: space.sm),
+        Tooltip(
+          message: 'Plan in the background and review it when it is ready.',
+          child: Semantics(
+            button: true,
+            label: 'Chunk in background',
+            hint: 'Generates a plan without waiting; review it when ready.',
+            child: OutlinedButton.icon(
+              onPressed: () {
+                final value = _goal.text.trim();
+                if (value.isEmpty) return;
+                controller.startPlanningJob(value);
+                _goal.clear();
+                setState(() {});
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Working on it in the background — review it below when '
+                      'it is ready.',
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.bolt_outlined),
+              label: const Text('Chunk in background'),
+            ),
+          ),
+        ),
+        SizedBox(height: space.sm),
         Text(
           'Review the plan before saving, then earn your win one step at a time.',
           style: context.texts.bodySmall
               ?.copyWith(color: context.colors.onSurfaceVariant),
         ),
+        if (controller.jobs.isNotEmpty) ...[
+          SizedBox(height: space.lg),
+          _jobsInbox(controller),
+        ],
       ],
+    );
+  }
+
+  Widget _jobsInbox(AppController controller) {
+    final space = context.space;
+    final jobs = controller.jobs.reversed.toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Background plans', style: context.texts.titleMedium),
+        SizedBox(height: space.sm),
+        for (final job in jobs) _jobTile(controller, job),
+      ],
+    );
+  }
+
+  Widget _jobTile(AppController controller, PlanningJob job) {
+    final space = context.space;
+    final (icon, label, actionable) = switch (job.status) {
+      PlanningJobStatus.thinking => (Icons.hourglass_top, 'Working…', false),
+      PlanningJobStatus.clarifying => (Icons.help_outline, 'Needs info', true),
+      PlanningJobStatus.ready => (Icons.check_circle_outline, 'Ready', true),
+      PlanningJobStatus.error => (Icons.error_outline, 'Failed', true),
+    };
+    return Card(
+      margin: EdgeInsets.only(bottom: space.sm),
+      child: ListTile(
+        leading: job.status == PlanningJobStatus.thinking
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Icon(icon),
+        title: Text(job.goal, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text(label),
+        trailing: actionable
+            ? TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ReviewPlanScreen(jobId: job.id),
+                  ),
+                ),
+                child: Text(
+                    job.status == PlanningJobStatus.ready ? 'Review' : 'Open'),
+              )
+            : IconButton(
+                tooltip: 'Cancel',
+                icon: const Icon(Icons.close),
+                onPressed: () => controller.discardJob(job.id),
+              ),
+      ),
     );
   }
 

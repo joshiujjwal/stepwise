@@ -6,7 +6,8 @@ import 'package:stepwise/coordinator/planner.dart';
 import 'package:stepwise/coordinator/prompts.dart';
 
 void main() {
-  test('Gemma-style malformed JSON triggers one repair with bounded prompt', () async {
+  test('Gemma-style malformed JSON triggers one repair with bounded prompt',
+      () async {
     final largeDetail = 'x' * 5000;
     final gemmaLikeMalformed = '''
 ```json
@@ -68,7 +69,9 @@ void main() {
     expect(llm.calls[1].user.length, lessThan(2600));
   });
 
-  test('parses valid JSON object even when wrapped in chatter and braces in string', () async {
+  test(
+      'parses valid JSON object even when wrapped in chatter and braces in string',
+      () async {
     final wrappedResponse = '''
 Sure — here is the plan:
 {
@@ -304,8 +307,7 @@ Thanks!
   // shape ({text, evidence_type}). Should coerce to a valid plan without repair.
   test('normalizes actionless "tasks" list with criterion-shaped items',
       () async {
-    const gemmaShape =
-        '{"idea_type": "trip", "tasks": ['
+    const gemmaShape = '{"idea_type": "trip", "tasks": ['
         '{"text": "Book flights", "evidence_type": "checkbox"}, '
         '{"text": "Reserve hotel", "evidence_type": "checkbox"}, '
         '{"text": "Pack essentials", "evidence_type": "checkbox"}]}';
@@ -330,8 +332,7 @@ Thanks!
   // task nested under a "task" key with the title missing (only a description).
   test('normalizes actionless "tasks" list with nested "task" objects',
       () async {
-    const gemmaShape =
-        '{"idea_type": "errand", "tasks": ['
+    const gemmaShape = '{"idea_type": "errand", "tasks": ['
         '{"order_index": 1, "task": {'
         '"description": "Make a grocery list based on your needs.", '
         '"acceptance_criteria": [{"text": "List includes all items", "evidence_type": "checkbox"}], '
@@ -354,10 +355,12 @@ Thanks!
     expect(llm.calls.length, 1, reason: 'should not need a repair round');
     expect(plan.ideaType, 'errand');
     expect(plan.tasks.length, 3);
-    expect(plan.tasks[0].description, 'Make a grocery list based on your needs.');
+    expect(
+        plan.tasks[0].description, 'Make a grocery list based on your needs.');
     expect(plan.tasks[0].estMinutes, 20);
     expect(plan.tasks[0].title.trim(), isNotEmpty);
-    expect(plan.tasks[0].acceptanceCriteria.first.text, 'List includes all items');
+    expect(
+        plan.tasks[0].acceptanceCriteria.first.text, 'List includes all items');
     expect(plan.tasks.map((t) => t.orderIndex).toList(), [1, 2, 3]);
   });
 }

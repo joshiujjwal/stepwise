@@ -41,6 +41,21 @@ class PlanResponse extends PlannerResponse {
   final String ideaType;
   final String? summary;
   final List<PlannedTask> tasks;
+
+  Map<String, Object?> toMap() => {
+        'idea_type': ideaType,
+        if (summary != null) 'summary': summary,
+        'tasks': [for (final t in tasks) t.toMap()],
+      };
+
+  factory PlanResponse.fromMap(Map<String, Object?> map) => PlanResponse(
+        ideaType: map['idea_type'] as String,
+        summary: map['summary'] as String?,
+        tasks: [
+          for (final t in (map['tasks'] as List? ?? const []))
+            PlannedTask.fromMap((t as Map).cast<String, Object?>()),
+        ],
+      );
 }
 
 class PlannedTask {
@@ -56,12 +71,59 @@ class PlannedTask {
   final int estMinutes;
   final int orderIndex;
   final List<PlannedCriterion> acceptanceCriteria;
+
+  PlannedTask copyWith({
+    String? title,
+    String? description,
+    int? estMinutes,
+    int? orderIndex,
+    List<PlannedCriterion>? acceptanceCriteria,
+  }) =>
+      PlannedTask(
+        title: title ?? this.title,
+        description: description ?? this.description,
+        estMinutes: estMinutes ?? this.estMinutes,
+        orderIndex: orderIndex ?? this.orderIndex,
+        acceptanceCriteria: acceptanceCriteria ?? this.acceptanceCriteria,
+      );
+
+  Map<String, Object?> toMap() => {
+        'title': title,
+        'description': description,
+        'est_minutes': estMinutes,
+        'order_index': orderIndex,
+        'acceptance_criteria': [
+          for (final c in acceptanceCriteria) c.toMap(),
+        ],
+      };
+
+  factory PlannedTask.fromMap(Map<String, Object?> map) => PlannedTask(
+        title: map['title'] as String,
+        description: map['description'] as String,
+        estMinutes: (map['est_minutes'] as num).toInt(),
+        orderIndex: (map['order_index'] as num).toInt(),
+        acceptanceCriteria: [
+          for (final c in (map['acceptance_criteria'] as List? ?? const []))
+            PlannedCriterion.fromMap((c as Map).cast<String, Object?>()),
+        ],
+      );
 }
 
 class PlannedCriterion {
   const PlannedCriterion({required this.text, required this.evidenceType});
   final String text;
   final String evidenceType;
+
+  Map<String, Object?> toMap() => {
+        'text': text,
+        'evidence_type': evidenceType,
+      };
+
+  factory PlannedCriterion.fromMap(Map<String, Object?> map) =>
+      PlannedCriterion(
+        text: map['text'] as String,
+        evidenceType: map['evidence_type'] as String,
+      );
 }
 
 enum PlanContext { plan, retask }
@@ -375,8 +437,8 @@ class Coordinator {
       if (task != null) normalized.add(task);
     }
 
-    normalized.sort((a, b) =>
-        (a['order_index'] as int).compareTo(b['order_index'] as int));
+    normalized.sort(
+        (a, b) => (a['order_index'] as int).compareTo(b['order_index'] as int));
     final canonicalTasks = <Map<String, dynamic>>[
       for (var i = 0; i < normalized.length; i++)
         {
@@ -419,12 +481,15 @@ class Coordinator {
         _asString(item['description']) ??
         title;
 
-    final order =
-        _asInt(item['order_index']) ?? _asInt(fields['order_index']) ?? (index + 1);
+    final order = _asInt(item['order_index']) ??
+        _asInt(fields['order_index']) ??
+        (index + 1);
     final estMinutes =
         _normalizeEstMinutes(fields['est_minutes'] ?? item['est_minutes']);
     final criteria = _normalizeCriteria(
-      fields['acceptance_criteria'] ?? fields['criteria'] ?? item['acceptance_criteria'],
+      fields['acceptance_criteria'] ??
+          fields['criteria'] ??
+          item['acceptance_criteria'],
       title,
     );
 
@@ -548,7 +613,8 @@ class Coordinator {
 
   static List<String> _extractFencedBlocks(String raw) {
     final blocks = <String>[];
-    final fence = RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```', caseSensitive: false);
+    final fence =
+        RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```', caseSensitive: false);
     for (final match in fence.allMatches(raw)) {
       final block = match.group(1)?.trim();
       if (block != null && block.isNotEmpty) blocks.add(block);

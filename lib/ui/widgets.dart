@@ -130,11 +130,65 @@ class SectionCard extends StatelessWidget {
   }
 }
 
-/// A single headline metric (value over label) for stat rows.
+/// A slim progress track with a brand-tinted fill, used for completion and
+/// idea progress. Static by design — it conveys state, not motion.
+class ProgressBar extends StatelessWidget {
+  const ProgressBar({
+    super.key,
+    required this.value,
+    this.color,
+    this.trackColor,
+    this.height = 8,
+    this.semanticLabel,
+  });
+
+  /// Completion in the range 0..1 (clamped).
+  final double value;
+  final Color? color;
+  final Color? trackColor;
+  final double height;
+  final String? semanticLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final v = value.isNaN ? 0.0 : value.clamp(0.0, 1.0);
+    final fill = color ?? context.colors.primary;
+    final track = trackColor ?? context.colors.surfaceContainerHigh;
+    return Semantics(
+      label: semanticLabel,
+      value: '${(v * 100).round()}%',
+      child: ClipRRect(
+        borderRadius: context.radius.pillAll,
+        child: SizedBox(
+          height: height,
+          child: Stack(
+            children: [
+              Positioned.fill(child: ColoredBox(color: track)),
+              FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: v,
+                child: DecoratedBox(decoration: BoxDecoration(color: fill)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A single headline metric (value over label) for stat rows. Pass [accent] to
+/// tint the value when it marks a positive signal (e.g. an active streak).
 class StatCard extends StatelessWidget {
-  const StatCard({super.key, required this.label, required this.value});
+  const StatCard({
+    super.key,
+    required this.label,
+    required this.value,
+    this.accent,
+  });
   final String label;
   final String value;
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +202,10 @@ class StatCard extends StatelessWidget {
           children: [
             Text(
               value,
-              style: context.texts.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: context.texts.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: accent,
+              ),
             ),
             SizedBox(height: context.space.xs),
             Text(
