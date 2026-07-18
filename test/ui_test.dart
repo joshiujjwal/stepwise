@@ -43,7 +43,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        tester.getSemantics(find.byType(TextField)),
+        tester.getSemantics(find.byType(TextField).first),
         isSemantics(
           label: 'TODO input',
           hint: 'Enter one task to split into smaller steps.',
@@ -68,7 +68,7 @@ void main() {
     final c = _fresh();
     await tester.pumpWidget(_app(c, const IdeaScreen()));
 
-    await tester.enterText(find.byType(TextField), 'file my 2025 taxes');
+    await tester.enterText(find.byType(TextField).first, 'file my 2025 taxes');
     await tester.tap(find.text('Chunk TODO'));
     await tester.pumpAndSettle();
 

@@ -31,6 +31,7 @@ class PlanningJob {
     required this.goal,
     required this.status,
     required this.createdAt,
+    this.context = 'none',
     this.questions = const [],
     this.proposal,
     this.error,
@@ -40,6 +41,10 @@ class PlanningJob {
   final String goal;
   final PlanningJobStatus status;
   final DateTime createdAt;
+
+  /// Optional starting-point context the user gave up front (issue #9). Fed to
+  /// the planner and kept across clarify re-runs. `'none'` when not provided.
+  final String context;
 
   /// Clarifying questions when [status] is [PlanningJobStatus.clarifying].
   final List<String> questions;
@@ -63,6 +68,7 @@ class PlanningJob {
         goal: goal,
         status: status ?? this.status,
         createdAt: createdAt,
+        context: context,
         questions: questions ?? this.questions,
         proposal: proposal ?? this.proposal,
         error: error,
@@ -73,6 +79,7 @@ class PlanningJob {
         'goal': goal,
         'status': status.name,
         'created_at': createdAt.toIso8601String(),
+        if (context != 'none') 'context': context,
         'questions': questions,
         if (proposal != null) 'proposal': proposal!.toMap(),
         if (error != null) 'error': error,
@@ -86,6 +93,7 @@ class PlanningJob {
           orElse: () => PlanningJobStatus.error,
         ),
         createdAt: DateTime.parse(map['created_at'] as String),
+        context: (map['context'] as String?) ?? 'none',
         questions: [
           for (final q in (map['questions'] as List? ?? const [])) q as String,
         ],

@@ -28,7 +28,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(NavigationDestination, 'Idea'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Plan a weekend trip');
+    await tester.enterText(find.byType(TextField).first, 'Plan a weekend trip');
     await tester.tap(find.text('Chunk TODO'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Proposed plan'), findsOneWidget);

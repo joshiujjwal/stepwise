@@ -31,6 +31,11 @@ void main() {
     await tester.pump();
 
     expect(c.jobs, hasLength(1));
+    await tester.dragUntilVisible(
+      find.text('Background plans'),
+      find.byType(ListView),
+      const Offset(0, -100),
+    );
     expect(find.text('Background plans'), findsOneWidget);
 
     await c.flushPlanningJobs();

@@ -346,11 +346,19 @@ class Coordinator {
     required String goal,
     String typeGuess = 'unknown',
     String priorAnswers = 'none',
+    String startingContext = 'none',
     PlanContext context = PlanContext.plan,
     String? systemPromptOverride,
   }) async {
+    final trimmedContext = startingContext.trim();
+    final hasContext =
+        trimmedContext.isNotEmpty && trimmedContext.toLowerCase() != 'none';
+    final contextLine = hasContext
+        ? '\nStarting point / context from the user (ground the plan in this; '
+            'do NOT restart from scratch): $trimmedContext'
+        : '';
     final user =
-        'Goal: $goal\nType (guess, may be wrong): $typeGuess\nAnswers to prior questions: $priorAnswers';
+        'Goal: $goal\nType (guess, may be wrong): $typeGuess\nAnswers to prior questions: $priorAnswers$contextLine';
     final system = systemPromptOverride ??
         (context == PlanContext.retask
             ? reTaskingSystemPrompt

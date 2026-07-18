@@ -23,11 +23,13 @@ class IdeaScreen extends StatefulWidget {
 
 class _IdeaScreenState extends State<IdeaScreen> {
   final TextEditingController _goal = TextEditingController();
+  final TextEditingController _context = TextEditingController();
   final TextEditingController _answer = TextEditingController();
 
   @override
   void dispose() {
     _goal.dispose();
+    _context.dispose();
     _answer.dispose();
     super.dispose();
   }
@@ -60,6 +62,11 @@ class _IdeaScreenState extends State<IdeaScreen> {
         ),
       ),
     );
+  }
+
+  String _contextValue() {
+    final value = _context.text.trim();
+    return value.isEmpty ? 'none' : value;
   }
 
   Widget _capture(AppController controller) {
@@ -101,6 +108,28 @@ class _IdeaScreenState extends State<IdeaScreen> {
         ),
         SizedBox(height: space.md),
         Tooltip(
+          message:
+              'Optional: tell us where you are starting from so the steps fit '
+              'your situation.',
+          child: Semantics(
+            label: 'Starting point input',
+            hint: 'Optional context: what you have already done or where to '
+                'start.',
+            textField: true,
+            child: TextField(
+              controller: _context,
+              minLines: 2,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Where do you want to start? (optional)',
+                hintText:
+                    "e.g. Slides are done — I just want to rehearse delivery",
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: space.md),
+        Tooltip(
           message: 'Split this TODO into smaller steps.',
           child: Semantics(
             button: true,
@@ -109,7 +138,9 @@ class _IdeaScreenState extends State<IdeaScreen> {
             child: FilledButton(
               onPressed: () {
                 final value = _goal.text.trim();
-                if (value.isNotEmpty) controller.submitTodoItem(value);
+                if (value.isNotEmpty) {
+                  controller.submitTodoItem(value, context: _contextValue());
+                }
               },
               child: const Text('Chunk TODO'),
             ),
@@ -126,8 +157,9 @@ class _IdeaScreenState extends State<IdeaScreen> {
               onPressed: () {
                 final value = _goal.text.trim();
                 if (value.isEmpty) return;
-                controller.startPlanningJob(value);
+                controller.startPlanningJob(value, context: _contextValue());
                 _goal.clear();
+                _context.clear();
                 setState(() {});
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

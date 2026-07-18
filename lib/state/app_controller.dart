@@ -19,6 +19,7 @@ enum PlanningPhase { idle, thinking, clarifying, proposed, error }
 class PlanningSession {
   const PlanningSession({
     required this.goal,
+    this.context = 'none',
     this.phase = PlanningPhase.thinking,
     this.questions = const [],
     this.proposal,
@@ -26,6 +27,7 @@ class PlanningSession {
   });
 
   final String goal;
+  final String context;
   final PlanningPhase phase;
   final List<String> questions;
   final PlanResponse? proposal;
@@ -39,6 +41,7 @@ class PlanningSession {
   }) {
     return PlanningSession(
       goal: goal,
+      context: context,
       phase: phase ?? this.phase,
       questions: questions ?? this.questions,
       proposal: proposal ?? this.proposal,
@@ -189,26 +192,28 @@ class AppController extends ChangeNotifier {
   MicroTask taskById(String id) => _tasks.firstWhere((t) => t.id == id);
 
   // ---- idea capture (conversational, spec §4/§11) ----
-  Future<void> submitGoal(String goal) async {
-    _session = PlanningSession(goal: goal);
+  Future<void> submitGoal(String goal, {String context = 'none'}) async {
+    _session = PlanningSession(goal: goal, context: context);
     notifyListeners();
-    await _runPlanner(goal, 'none');
+    await _runPlanner(goal, 'none', context);
   }
 
   /// TODO-first flow: the user writes one TODO item and the dedicated agent
-  /// enhances/splits it into time-boxed executable chunks.
-  Future<void> submitTodoItem(String todoItem) async {
-    _session = PlanningSession(goal: todoItem);
+  /// enhances/splits it into time-boxed executable chunks. Optional [context]
+  /// tells the planner where the user is starting from (issue #9).
+  Future<void> submitTodoItem(String todoItem,
+      {String context = 'none'}) async {
+    _session = PlanningSession(goal: todoItem, context: context);
     notifyListeners();
 
     final agent = todoChunkingAgent;
     if (agent == null) {
-      await _runPlanner(todoItem, 'none');
+      await _runPlanner(todoItem, 'none', context);
       return;
     }
 
     try {
-      final proposal = await agent.chunkTodo(todoItem);
+      final proposal = await agent.chunkTodo(todoItem, context: context);
       _session = _session!.copyWith(
         phase: PlanningPhase.proposed,
         proposal: proposal,
@@ -232,12 +237,13 @@ class AppController extends ChangeNotifier {
     if (s == null) return;
     _session = s.copyWith(phase: PlanningPhase.thinking);
     notifyListeners();
-    await _runPlanner(s.goal, answers.isEmpty ? 'none' : answers);
+    await _runPlanner(s.goal, answers.isEmpty ? 'none' : answers, s.context);
   }
 
-  Future<void> _runPlanner(String goal, String answers) async {
+  Future<void> _runPlanner(String goal, String answers, String context) async {
     try {
-      final resp = await coordinator.plan(goal: goal, priorAnswers: answers);
+      final resp = await coordinator.plan(
+          goal: goal, priorAnswers: answers, startingContext: context);
       _session = switch (resp) {
         ClarifyResponse(:final questions) => _session!
             .copyWith(phase: PlanningPhase.clarifying, questions: questions),
@@ -321,18 +327,19 @@ class AppController extends ChangeNotifier {
   /// Kick off decomposition of [goal] in the background. Returns the new job id
   /// immediately; the plan becomes available via [jobById]/[readyJobs] once the
   /// coordinator finishes.
-  String startPlanningJob(String goal) {
+  String startPlanningJob(String goal, {String context = 'none'}) {
     final id = _newId();
     final job = PlanningJob(
       id: id,
       goal: goal,
       status: PlanningJobStatus.thinking,
       createdAt: _now(),
+      context: context,
     );
     _jobs.add(job);
     _enqueue((p) => p.upsertJob(job));
     notifyListeners();
-    _scheduleJob(id, goal, 'none');
+    _scheduleJob(id, goal, 'none', context);
     return id;
   }
 
@@ -341,11 +348,13 @@ class AppController extends ChangeNotifier {
     final i = _jobIndex(id);
     if (i == -1) return;
     final goal = _jobs[i].goal;
+    final context = _jobs[i].context;
     _updateJob(
         id,
         (j) => j
             .copyWith(status: PlanningJobStatus.thinking, questions: const []));
-    _scheduleJob(id, goal, answers.trim().isEmpty ? 'none' : answers.trim());
+    _scheduleJob(
+        id, goal, answers.trim().isEmpty ? 'none' : answers.trim(), context);
   }
 
   /// Replace a ready job's plan with an edited one (edit-before-submit).
@@ -406,15 +415,17 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _scheduleJob(String id, String goal, String answers) {
-    _jobQueue = _jobQueue.then((_) => _runJob(id, goal, answers));
+  void _scheduleJob(String id, String goal, String answers, String context) {
+    _jobQueue = _jobQueue.then((_) => _runJob(id, goal, answers, context));
   }
 
-  Future<void> _runJob(String id, String goal, String answers) async {
+  Future<void> _runJob(
+      String id, String goal, String answers, String context) async {
     // The job may have been discarded while queued behind another run.
     if (_jobIndex(id) == -1) return;
     try {
-      final resp = await coordinator.plan(goal: goal, priorAnswers: answers);
+      final resp = await coordinator.plan(
+          goal: goal, priorAnswers: answers, startingContext: context);
       _updateJob(
         id,
         (j) => switch (resp) {

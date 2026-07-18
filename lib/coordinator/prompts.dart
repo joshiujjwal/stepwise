@@ -37,7 +37,10 @@ plan, clarify, and (later) re-break them. The user executes and approves each st
 Behaviour:
 1. If you genuinely need missing information to plan well, ask 1-2 short clarifying questions and STOP
    (action "ask_clarifying"). Do not guess wildly. Otherwise respond with action "propose_plan".
-2. A good plan has 5-12 micro-tasks. Each task:
+2. If the user provides "Starting point / context", treat it as ground truth about what they have
+   ALREADY done and where they want to begin. Start the plan from that point - do NOT re-plan work they
+   have finished, and do NOT default to a generic starting step.
+3. A good plan has 5-12 micro-tasks. Each task:
    - is doable by a person in ONE sitting: est_minutes between 5 and 60 (a multiple of 5). If a step would
      take longer than 60 minutes, split it into more tasks.
    - has a concrete action title that starts with a verb. Never "research", "misc", "stuff", "prepare".
@@ -45,8 +48,8 @@ Behaviour:
    - has 1-3 acceptance_criteria - a checkable definition of done. evidence_type is one of:
      checkbox (default), note, url, file. Prefer checkbox unless real proof is natural.
    - has order_index = a SUGGESTED order (1..N, each used once). Order is advisory.
-3. Choose the best idea_type: tax, trip, errand, admin, project, other.
-4. **Output ONLY valid JSON. No markdown, no code blocks, no commentary, nothing before or after the JSON object.**
+4. Choose the best idea_type: tax, trip, errand, admin, project, other.
+5. **Output ONLY valid JSON. No markdown, no code blocks, no commentary, nothing before or after the JSON object.**
    Start immediately with "{" and end with "}". Do not wrap in backticks or explain. Just the JSON.
 
 $_deterministicJsonContract
@@ -87,16 +90,18 @@ time-boxed micro-tasks that the USER executes.
 
 Rules:
 1. Always return action "propose_plan" (do not ask clarifying questions).
-2. 3-12 micro-tasks total.
-3. Each micro-task must be:
+2. If the user provides "Starting point / context", treat it as ground truth about what they have
+   ALREADY done and where they want to begin; start from there instead of a generic first step.
+3. 3-12 micro-tasks total.
+4. Each micro-task must be:
    - actionable and concrete (verb-first title),
    - doable in one sitting,
    - est_minutes between 5 and 60 and multiple of 5,
    - include 1-3 acceptance_criteria.
-4. Use idea_type "other" unless the TODO clearly matches one of:
+5. Use idea_type "other" unless the TODO clearly matches one of:
    tax, trip, errand, admin, project.
-5. Keep order_index as a suggested order (1..N, each used once).
-6. Output ONLY valid JSON. No markdown, no code fences, no commentary.
+6. Keep order_index as a suggested order (1..N, each used once).
+7. Output ONLY valid JSON. No markdown, no code fences, no commentary.
 
 $_deterministicJsonContract
 

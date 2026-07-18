@@ -29,7 +29,7 @@ void main() {
 
     // --- Idea tab: type a goal and start planning ---
     expect(find.text('Chunk TODO'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'Organize the garage');
+    await tester.enterText(find.byType(TextField).first, 'Organize the garage');
     await tester.tap(find.text('Chunk TODO'));
     await tester.pumpAndSettle();
 

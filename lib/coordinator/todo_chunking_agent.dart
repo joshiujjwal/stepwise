@@ -12,10 +12,12 @@ class TodoChunkingAgent {
   final Coordinator coordinator;
   final String systemPrompt;
 
-  Future<PlanResponse> chunkTodo(String todoItem) async {
+  Future<PlanResponse> chunkTodo(String todoItem,
+      {String context = 'none'}) async {
     final response = await coordinator.plan(
       goal: todoItem,
       priorAnswers: 'none',
+      startingContext: context,
       systemPromptOverride: systemPrompt,
     );
     if (response is PlanResponse) return response;
