@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
 
@@ -9,14 +10,140 @@ import 'planner.dart';
 enum ModelPhase { unknown, notInstalled, downloading, ready, error }
 
 class ModelState {
-  const ModelState(this.phase, {this.progress = 0, this.error});
+  const ModelState(
+    this.phase, {
+    this.progress = 0,
+    this.bytesPerSecond,
+    this.downloadedBytes,
+    this.totalBytes,
+    this.error,
+  });
   final ModelPhase phase;
   final double progress; // 0..1 while downloading
+
+  /// Smoothed download speed in bytes/second, or null when the total model
+  /// size is unknown (flutter_gemma only reports percent, so a configured
+  /// size is required to derive a byte rate).
+  final double? bytesPerSecond;
+
+  /// Bytes downloaded so far, derived from [progress] × total size. Null when
+  /// the total size is unknown.
+  final int? downloadedBytes;
+
+  /// Total model size in bytes, when known.
+  final int? totalBytes;
   final String? error;
 
-  ModelState copyWith({ModelPhase? phase, double? progress, String? error}) =>
-      ModelState(phase ?? this.phase,
-          progress: progress ?? this.progress, error: error);
+  ModelState copyWith({
+    ModelPhase? phase,
+    double? progress,
+    double? bytesPerSecond,
+    int? downloadedBytes,
+    int? totalBytes,
+    String? error,
+  }) =>
+      ModelState(
+        phase ?? this.phase,
+        progress: progress ?? this.progress,
+        bytesPerSecond: bytesPerSecond ?? this.bytesPerSecond,
+        downloadedBytes: downloadedBytes ?? this.downloadedBytes,
+        totalBytes: totalBytes ?? this.totalBytes,
+        error: error,
+      );
+}
+
+/// A single download progress observation, carrying enough to render a
+/// speedtest-style readout (percentage, live MB/s, and downloaded/total size).
+class ModelDownloadProgress {
+  const ModelDownloadProgress({
+    required this.fraction,
+    this.bytesPerSecond,
+    this.downloadedBytes,
+    this.totalBytes,
+  });
+
+  /// Overall completion, 0..1.
+  final double fraction;
+
+  /// Smoothed transfer rate in bytes/second, or null when unknown.
+  final double? bytesPerSecond;
+
+  /// Bytes transferred so far, or null when the total size is unknown.
+  final int? downloadedBytes;
+
+  /// Total bytes to transfer, or null when unknown.
+  final int? totalBytes;
+}
+
+/// Turns flutter_gemma's percent-only progress into a smoothed byte rate.
+///
+/// flutter_gemma's `withProgress` callback only surfaces an integer percent
+/// (0–100) — no byte counters — so a live MB/s readout needs the configured
+/// [totalBytes] plus timing between updates. An exponential moving average
+/// ([smoothing] is the weight of the newest sample) keeps the number steady
+/// instead of jittering with each callback.
+class DownloadSpeedTracker {
+  DownloadSpeedTracker({this.totalBytes, double smoothing = 0.3})
+      : assert(smoothing > 0 && smoothing <= 1),
+        _smoothing = smoothing;
+
+  final int? totalBytes;
+  final double _smoothing;
+
+  double? _lastFraction;
+  Duration? _lastElapsed;
+  double? _emaBytesPerSecond;
+
+  /// Records a new [fraction] (0..1) observed at [elapsed] since the download
+  /// started and returns the derived progress snapshot.
+  ModelDownloadProgress update(double fraction, Duration elapsed) {
+    final clamped = fraction.clamp(0.0, 1.0).toDouble();
+    final total = totalBytes;
+    if (total != null && _lastFraction != null && _lastElapsed != null) {
+      final dtSeconds = (elapsed - _lastElapsed!).inMicroseconds /
+          Duration.microsecondsPerSecond;
+      final deltaBytes = (clamped - _lastFraction!) * total;
+      if (dtSeconds > 0 && deltaBytes >= 0) {
+        final instant = deltaBytes / dtSeconds;
+        _emaBytesPerSecond = _emaBytesPerSecond == null
+            ? instant
+            : _emaBytesPerSecond! * (1 - _smoothing) + instant * _smoothing;
+      }
+    }
+    _lastFraction = clamped;
+    _lastElapsed = elapsed;
+    return ModelDownloadProgress(
+      fraction: clamped,
+      bytesPerSecond: total == null ? null : _emaBytesPerSecond,
+      downloadedBytes: total == null ? null : (clamped * total).round(),
+      totalBytes: total,
+    );
+  }
+}
+
+/// Formats a byte rate as a compact, human-readable speed (e.g. `12.3 MB/s`).
+/// Returns an empty string when the rate is unknown or non-positive.
+String formatDownloadSpeed(double? bytesPerSecond) {
+  if (bytesPerSecond == null || bytesPerSecond <= 0) return '';
+  const kb = 1024.0;
+  const mb = kb * 1024;
+  if (bytesPerSecond >= mb) {
+    return '${(bytesPerSecond / mb).toStringAsFixed(1)} MB/s';
+  }
+  return '${(bytesPerSecond / kb).toStringAsFixed(0)} KB/s';
+}
+
+/// Formats a byte count as a compact size (e.g. `420 MB`, `1.05 GB`).
+/// Returns an empty string when [bytes] is null.
+String formatBytes(int? bytes) {
+  if (bytes == null) return '';
+  const kb = 1024.0;
+  const mb = kb * 1024;
+  const gb = mb * 1024;
+  if (bytes >= gb) return '${(bytes / gb).toStringAsFixed(2)} GB';
+  if (bytes >= mb) return '${(bytes / mb).toStringAsFixed(0)} MB';
+  if (bytes >= kb) return '${(bytes / kb).toStringAsFixed(0)} KB';
+  return '$bytes B';
 }
 
 /// Abstraction over the on-device model lifecycle, so Settings logic can be
@@ -109,8 +236,8 @@ abstract interface class ModelService {
 
   Future<bool> isInstalled();
 
-  /// Emits progress 0..1 while downloading; completes when installed.
-  Stream<double> download();
+  /// Emits progress while downloading; completes when installed.
+  Stream<ModelDownloadProgress> download();
 
   /// Build an [LlmClient] over the installed model.
   Future<LlmClient> activate();
@@ -143,6 +270,7 @@ class GemmaModelService implements ModelService {
     required this.source,
     this.modelType = ModelType.gemmaIt,
     this.maxTokens = 2048,
+    this.sizeBytes,
     String? id,
     ModelFileType? fileType,
   })  : modelId = id ?? _modelIdFromSource(source.location),
@@ -151,6 +279,13 @@ class GemmaModelService implements ModelService {
   final GemmaModelSource source;
   final ModelType modelType;
   final int maxTokens;
+
+  /// Total download size in bytes, when known ahead of time (e.g. from a
+  /// build-time `GEMMA_MODEL_SIZE_BYTES` define). Optional: for network
+  /// downloads the size is auto-detected via an HTTP `Content-Length` probe,
+  /// so the live MB/s readout works without this. When set, it takes precedence
+  /// over the probe (useful for CDNs that reject `HEAD`).
+  final int? sizeBytes;
 
   /// The on-disk format of the model file, derived from its extension unless
   /// overridden. This is required so `.litertlm` models route to the LiteRT/FFI
@@ -164,32 +299,62 @@ class GemmaModelService implements ModelService {
   Future<bool> isInstalled() => FlutterGemma.isModelInstalled(modelId);
 
   @override
-  Stream<double> download() {
-    final controller = StreamController<double>();
+  Stream<ModelDownloadProgress> download() {
+    final controller = StreamController<ModelDownloadProgress>();
+    _runDownload(controller);
+    return controller.stream;
+  }
+
+  /// Resolves the total size (configured or probed), then installs while
+  /// forwarding a byte-rate-aware progress snapshot on every percent update.
+  Future<void> _runDownload(
+      StreamController<ModelDownloadProgress> controller) async {
+    final total = sizeBytes ?? await probeTotalBytes();
+    final tracker = DownloadSpeedTracker(totalBytes: total);
+    final stopwatch = Stopwatch()..start();
     try {
-      _buildInstallRequest()
-          .withProgress((percent) {
-            if (!controller.isClosed) {
-              controller.add((percent / 100).clamp(0, 1));
-            }
-          })
-          .install()
-          .then((_) {
-            if (!controller.isClosed) controller.add(1);
-          })
-          .catchError((Object e) {
-            if (!controller.isClosed) {
-              controller.addError(_wrapInstallError(e));
-            }
-          })
-          .whenComplete(controller.close);
+      await _buildInstallRequest().withProgress((percent) {
+        if (!controller.isClosed) {
+          controller.add(tracker.update(percent / 100, stopwatch.elapsed));
+        }
+      }).install();
+      if (!controller.isClosed) {
+        controller.add(tracker.update(1, stopwatch.elapsed));
+      }
     } catch (e) {
       if (!controller.isClosed) {
         controller.addError(_wrapInstallError(e));
       }
-      controller.close();
+    } finally {
+      if (!controller.isClosed) await controller.close();
     }
-    return controller.stream;
+  }
+
+  /// Best-effort `Content-Length` probe for network models, so the download UI
+  /// can show a live MB/s rate and downloaded/total size without a configured
+  /// [sizeBytes]. Returns null for non-network sources or on any failure (a
+  /// missing size just degrades the UI to a percentage-only readout).
+  Future<int?> probeTotalBytes() async {
+    if (source.kind != GemmaModelSourceKind.network) return null;
+    final uri = Uri.tryParse(source.location);
+    if (uri == null) return null;
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 10);
+    try {
+      final request = await client.headUrl(uri);
+      final token = source.token;
+      if (token != null && token.isNotEmpty) {
+        request.headers.set(HttpHeaders.authorizationHeader, token);
+      }
+      final response = await request.close();
+      await response.drain<void>();
+      final length = response.contentLength;
+      return length > 0 ? length : null;
+    } catch (_) {
+      return null;
+    } finally {
+      client.close(force: true);
+    }
   }
 
   @override

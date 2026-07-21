@@ -85,7 +85,13 @@ class EngineController extends ChangeNotifier {
     notifyListeners();
     try {
       await for (final p in service.download()) {
-        model = ModelState(ModelPhase.downloading, progress: p);
+        model = ModelState(
+          ModelPhase.downloading,
+          progress: p.fraction,
+          bytesPerSecond: p.bytesPerSecond,
+          downloadedBytes: p.downloadedBytes,
+          totalBytes: p.totalBytes,
+        );
         notifyListeners();
       }
       model = const ModelState(ModelPhase.ready, progress: 1);

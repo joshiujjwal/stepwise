@@ -220,4 +220,68 @@ void main() {
       );
     });
   });
+
+  group('DownloadSpeedTracker', () {
+    test('derives MB/s from percent deltas over time', () {
+      final tracker = DownloadSpeedTracker(totalBytes: 100 * 1024 * 1024);
+
+      // First sample has no prior reference, so no rate yet.
+      final first = tracker.update(0.0, Duration.zero);
+      expect(first.bytesPerSecond, isNull);
+      expect(first.downloadedBytes, 0);
+      expect(first.totalBytes, 100 * 1024 * 1024);
+
+      // 10% of 100 MiB in 1 second ⇒ ~10 MiB/s.
+      final second = tracker.update(0.1, const Duration(seconds: 1));
+      expect(second.downloadedBytes, (0.1 * 100 * 1024 * 1024).round());
+      expect(second.bytesPerSecond, isNotNull);
+      expect(second.bytesPerSecond! / (1024 * 1024), closeTo(10, 0.001));
+    });
+
+    test('reports no rate when the total size is unknown', () {
+      final tracker = DownloadSpeedTracker();
+      final p = tracker.update(0.5, const Duration(seconds: 1));
+      expect(p.bytesPerSecond, isNull);
+      expect(p.downloadedBytes, isNull);
+      expect(p.totalBytes, isNull);
+      expect(p.fraction, 0.5);
+    });
+
+    test('ignores non-positive time deltas without dividing by zero', () {
+      final tracker = DownloadSpeedTracker(totalBytes: 1024)
+        ..update(0.1, const Duration(seconds: 1));
+      final same = tracker.update(0.2, const Duration(seconds: 1));
+      // dt == 0 ⇒ the EMA is unchanged from the previous (still-null) value.
+      expect(same.bytesPerSecond, isNull);
+    });
+  });
+
+  group('formatDownloadSpeed', () {
+    test('formats MB/s above 1 MiB/s', () {
+      expect(formatDownloadSpeed(12.3 * 1024 * 1024), '12.3 MB/s');
+    });
+
+    test('formats KB/s below 1 MiB/s', () {
+      expect(formatDownloadSpeed(200 * 1024), '200 KB/s');
+    });
+
+    test('is empty for null or non-positive rates', () {
+      expect(formatDownloadSpeed(null), '');
+      expect(formatDownloadSpeed(0), '');
+      expect(formatDownloadSpeed(-5), '');
+    });
+  });
+
+  group('formatBytes', () {
+    test('formats GB, MB, KB and bytes', () {
+      expect(formatBytes(2 * 1024 * 1024 * 1024), '2.00 GB');
+      expect(formatBytes(420 * 1024 * 1024), '420 MB');
+      expect(formatBytes(3 * 1024), '3 KB');
+      expect(formatBytes(512), '512 B');
+    });
+
+    test('is empty for null', () {
+      expect(formatBytes(null), '');
+    });
+  });
 }

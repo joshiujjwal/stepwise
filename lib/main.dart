@@ -92,6 +92,8 @@ Future<SqflitePersistenceStore?> _openPersistence() async {
 ///   --dart-define=GEMMA_MODEL_TYPE=gemmaIt|gemma4|deepSeek|qwen|qwen3|functionGemma|phi|general
 ///   --dart-define=GEMMA_MAX_TOKENS=2048
 ///   --dart-define=GEMMA_MAX_DOWNLOAD_RETRIES=2
+///   --dart-define=GEMMA_MODEL_SIZE_BYTES=... (total model size in bytes; enables
+///       a live MB/s download readout in Settings)
 ///   --dart-define=TODO_CHUNKING_SYSTEM_PROMPT=...
 ModelService? _gemmaService() {
   const modelFile = String.fromEnvironment('GEMMA_MODEL_FILE');
@@ -122,11 +124,14 @@ ModelService? _gemmaService() {
       ModelType.gemmaIt;
   final maxTokens =
       int.tryParse(_optionalDefine('GEMMA_MAX_TOKENS') ?? '') ?? 2048;
+  final sizeBytes =
+      int.tryParse(_optionalDefine('GEMMA_MODEL_SIZE_BYTES') ?? '');
 
   return GemmaModelService(
     source: source,
     modelType: modelType,
     maxTokens: maxTokens,
+    sizeBytes: sizeBytes,
   );
 }
 

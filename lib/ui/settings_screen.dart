@@ -98,9 +98,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ?.copyWith(color: context.colors.onSurfaceVariant),
             ),
             SizedBox(height: space.md),
-            if (model.phase == ModelPhase.downloading)
-              LinearProgressIndicator(value: model.progress)
-            else
+            if (model.phase == ModelPhase.downloading) ...[
+              LinearProgressIndicator(value: model.progress),
+              if (_downloadDetail(model).isNotEmpty) ...[
+                SizedBox(height: space.xs),
+                Text(
+                  _downloadDetail(model),
+                  style: context.texts.bodySmall
+                      ?.copyWith(color: context.colors.onSurfaceVariant),
+                ),
+              ],
+            ] else
               Wrap(
                 spacing: space.sm,
                 runSpacing: space.sm,
@@ -180,4 +188,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ModelPhase.ready => 'Installed and ready.',
         ModelPhase.error => 'Something went wrong.',
       };
+
+  /// A speedtest-style line for the active download: live MB/s and, when the
+  /// total size is known, the downloaded/total sizes. Empty when there is
+  /// nothing meaningful to show yet (e.g. before the first byte-rate sample).
+  String _downloadDetail(ModelState model) {
+    final parts = <String>[
+      formatDownloadSpeed(model.bytesPerSecond),
+      if (model.totalBytes != null)
+        '${formatBytes(model.downloadedBytes)} / ${formatBytes(model.totalBytes)}',
+    ].where((p) => p.isNotEmpty).toList();
+    return parts.join('  •  ');
+  }
 }

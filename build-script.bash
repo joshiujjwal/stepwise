@@ -144,6 +144,8 @@ fi
   DART_DEFINES+=("--dart-define=GEMMA_MAX_TOKENS=${GEMMA_MAX_TOKENS}")
 [[ -n "${GEMMA_MAX_DOWNLOAD_RETRIES:-}" ]] && \
   DART_DEFINES+=("--dart-define=GEMMA_MAX_DOWNLOAD_RETRIES=${GEMMA_MAX_DOWNLOAD_RETRIES}")
+[[ -n "${GEMMA_MODEL_SIZE_BYTES:-}" ]] && \
+  DART_DEFINES+=("--dart-define=GEMMA_MODEL_SIZE_BYTES=${GEMMA_MODEL_SIZE_BYTES}")
 
 flutter build ipa --release \
   --export-options-plist="$EXPORT_OPTIONS_BUILD" \

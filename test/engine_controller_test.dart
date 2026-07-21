@@ -18,9 +18,19 @@ class _FakeModelService implements ModelService {
   Future<bool> isInstalled() async => installed;
 
   @override
-  Stream<double> download() async* {
-    yield 0.5;
-    yield 1.0;
+  Stream<ModelDownloadProgress> download() async* {
+    yield const ModelDownloadProgress(
+      fraction: 0.5,
+      bytesPerSecond: 5 * 1024 * 1024,
+      downloadedBytes: 500,
+      totalBytes: 1000,
+    );
+    yield const ModelDownloadProgress(
+      fraction: 1.0,
+      bytesPerSecond: 6 * 1024 * 1024,
+      downloadedBytes: 1000,
+      totalBytes: 1000,
+    );
     installed = true;
   }
 
@@ -117,6 +127,25 @@ void main() {
 
     expect(engine.model.phase, ModelPhase.ready);
     expect(engine.mode, EngineMode.gemma);
+  });
+
+  test('downloadModel surfaces the byte rate reported by the service',
+      () async {
+    final swap = SwappableLlmClient(FakeLlmClient());
+    final engine =
+        EngineController(swappable: swap, modelService: _FakeModelService());
+
+    final speeds = <double?>[];
+    engine.addListener(() {
+      if (engine.model.phase == ModelPhase.downloading) {
+        speeds.add(engine.model.bytesPerSecond);
+      }
+    });
+
+    await engine.downloadModel();
+
+    expect(speeds, isNotEmpty);
+    expect(speeds.whereType<double>(), isNotEmpty);
   });
 
   test('engineStatusLabel reflects setup state before gemma is enabled', () {
